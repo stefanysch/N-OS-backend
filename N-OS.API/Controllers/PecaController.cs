@@ -49,7 +49,6 @@ public class PecaController : ControllerBase
             Nome = input.Nome,
             Descricao = input.Descricao,
             Valor = input.Valor,
-            Quantidade = input.Quantidade,
             CriadoEm = DateTime.UtcNow,
             Ativo = true
         };
@@ -72,15 +71,14 @@ public class PecaController : ControllerBase
         peca.Nome = input.Nome;
         peca.Descricao = input.Descricao;
         peca.Valor = input.Valor;
-        peca.Quantidade = input.Quantidade;
 
         await _context.SaveChangesAsync();
 
         return Ok(peca);
     }
 
-    // PUT: api/pecas/inativar/{id}
-    [HttpPut("inativar/{id}")]
+    // PATCH: api/pecas/inativar/{id}
+    [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {
         var peca = await _context.Pecas.FindAsync(id);
@@ -95,8 +93,8 @@ public class PecaController : ControllerBase
         return Ok("Peça inativada com sucesso");
     }
 
-    // PUT: api/pecas/reativar/{id}
-    [HttpPut("reativar/{id}")]
+    // Patch: api/pecas/reativar/{id}
+    [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {
         var peca = await _context.Pecas.FindAsync(id);

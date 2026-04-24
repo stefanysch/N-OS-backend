@@ -88,8 +88,8 @@ public class ClienteController : ControllerBase
         return Ok(cliente);
     }
 
-    // PUT: api/clientes/inativar/{id}
-    [HttpPut("inativar/{id}")]
+    // PATCH: api/clientes/inativar/{id}
+    [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {
         var cliente = await _context.Clientes.FindAsync(id);
@@ -104,8 +104,8 @@ public class ClienteController : ControllerBase
         return Ok("Cliente inativado com sucesso");
     }
 
-    // PUT: api/clientes/reativar/{id}
-    [HttpPut("reativar/{id}")]
+    // PATCH: api/clientes/reativar/{id}
+    [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {
         var cliente = await _context.Clientes.FindAsync(id);
