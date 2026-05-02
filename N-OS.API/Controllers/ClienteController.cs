@@ -39,14 +39,8 @@ public class ClienteController : ControllerBase
 
     // POST: api/clientes
     [HttpPost]
-    public async Task<IActionResult> Post(ClienteCreateDTO input)
+    public async Task<IActionResult> Post([FromBody] ClienteCreateDTO input)
     {
-        if (string.IsNullOrWhiteSpace(input.Nome) ||
-            string.IsNullOrWhiteSpace(input.Telefone))
-        {
-            return BadRequest("Nome e Telefone são obrigatórios");
-        }
-
         var cliente = new Cliente
         {
             Nome = input.Nome,
@@ -65,18 +59,12 @@ public class ClienteController : ControllerBase
 
     // PUT: api/clientes/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, ClienteUpdateDTO input)
+    public async Task<IActionResult> Put(int id, [FromBody] ClienteUpdateDTO input)
     {
         var cliente = await _context.Clientes.FindAsync(id);
 
         if (cliente == null)
             return NotFound("Cliente não encontrado");
-
-        if (string.IsNullOrWhiteSpace(input.Nome) ||
-            string.IsNullOrWhiteSpace(input.Telefone))
-        {
-            return BadRequest("Nome e Telefone são obrigatórios");
-        }
 
         cliente.Nome = input.Nome;
         cliente.Telefone = input.Telefone;

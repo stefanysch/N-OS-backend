@@ -22,7 +22,6 @@ public class ServicosController : ControllerBase
     public async Task<IActionResult> Get()
     {
         var servicos = await _context.Servicos.ToListAsync();
-
         return Ok(servicos);
     }
 
@@ -40,11 +39,8 @@ public class ServicosController : ControllerBase
 
     // POST: api/servicos
     [HttpPost]
-    public async Task<IActionResult> Post(ServicoCreateDTO input)
+    public async Task<IActionResult> Post([FromBody] ServicoCreateDTO input)
     {
-        if (string.IsNullOrWhiteSpace(input.Nome))
-            return BadRequest("Nome é obrigatório");
-
         var servico = new Servico
         {
             Nome = input.Nome,
@@ -62,15 +58,12 @@ public class ServicosController : ControllerBase
 
     // PUT: api/servicos/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, ServicoUpdateDTO input)
+    public async Task<IActionResult> Put(int id, [FromBody] ServicoUpdateDTO input)
     {
         var servico = await _context.Servicos.FindAsync(id);
 
         if (servico == null)
             return NotFound("Serviço não encontrado");
-
-        if (string.IsNullOrWhiteSpace(input.Nome))
-            return BadRequest("Nome é obrigatório");
 
         servico.Nome = input.Nome;
         servico.Descricao = input.Descricao;
@@ -112,4 +105,4 @@ public class ServicosController : ControllerBase
 
         return Ok("Serviço reativado com sucesso");
     }
-}
+} 

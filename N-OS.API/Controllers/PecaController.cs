@@ -39,11 +39,8 @@ public class PecaController : ControllerBase
 
     // POST: api/pecas
     [HttpPost]
-    public async Task<IActionResult> Post(PecaCreateDTO input)
+    public async Task<IActionResult> Post([FromBody] PecaCreateDTO input)
     {
-        if (string.IsNullOrWhiteSpace(input.Nome))
-            return BadRequest("Nome é obrigatório");
-
         var peca = new Peca
         {
             Nome = input.Nome,
@@ -61,7 +58,7 @@ public class PecaController : ControllerBase
 
     // PUT: api/pecas/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, PecaUpdateDTO input)
+    public async Task<IActionResult> Put(int id, [FromBody] PecaUpdateDTO input)
     {
         var peca = await _context.Pecas.FindAsync(id);
 
@@ -93,7 +90,7 @@ public class PecaController : ControllerBase
         return Ok("Peça inativada com sucesso");
     }
 
-    // Patch: api/pecas/reativar/{id}
+    // PATCH: api/pecas/reativar/{id}
     [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {

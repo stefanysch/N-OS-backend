@@ -54,7 +54,7 @@ namespace N_OS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clientes");
+                    b.ToTable("Clientes", (string)null);
                 });
 
             modelBuilder.Entity("N_OS.Domain.Entities.Peca", b =>
@@ -84,7 +84,7 @@ namespace N_OS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pecas");
+                    b.ToTable("Pecas", (string)null);
                 });
 
             modelBuilder.Entity("N_OS.Domain.Entities.Servico", b =>
@@ -114,7 +114,7 @@ namespace N_OS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Servicos");
+                    b.ToTable("Servicos", (string)null);
                 });
 #pragma warning restore 612, 618
         }
