@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using N_OS.Application.DTOs;
-using N_OS.Domain.Entities;
-using N_OS.Infrastructure.Data;
+using N_OS.Infrastructure.Services;
 
 namespace N_OS.API.Controllers;
 
@@ -10,26 +8,28 @@ namespace N_OS.API.Controllers;
 [Route("api/servicos")]
 public class ServicosController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ServicoService _service;
 
-    public ServicosController(AppDbContext context)
+    public ServicosController(
+        ServicoService service)
     {
-        _context = context;
+        _service = service;
     }
 
-    // GET: api/servicos
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var servicos = await _context.Servicos.ToListAsync();
+        var servicos =
+            await _service.Listar();
+
         return Ok(servicos);
     }
 
-    // GET: api/servicos/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var servico = await _context.Servicos.FindAsync(id);
+        var servico =
+            await _service.BuscarPorId(id);
 
         if (servico == null)
             return NotFound("Serviço não encontrado");
@@ -37,72 +37,55 @@ public class ServicosController : ControllerBase
         return Ok(servico);
     }
 
-    // POST: api/servicos
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] ServicoCreateDTO input)
+    public async Task<IActionResult> Post(
+        [FromBody] ServicoCreateDTO input)
     {
-        var servico = new Servico
-        {
-            Nome = input.Nome,
-            Descricao = input.Descricao,
-            Valor = input.Valor,
-            CriadoEm = DateTime.UtcNow,
-            Ativo = true
-        };
+        var servico =
+            await _service.Criar(input);
 
-        _context.Servicos.Add(servico);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = servico.Id }, servico);
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = servico.Id },
+            servico
+        );
     }
 
-    // PUT: api/servicos/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] ServicoUpdateDTO input)
+    public async Task<IActionResult> Put(
+        int id,
+        [FromBody] ServicoUpdateDTO input)
     {
-        var servico = await _context.Servicos.FindAsync(id);
+        var servico =
+            await _service.Atualizar(id, input);
 
         if (servico == null)
             return NotFound("Serviço não encontrado");
 
-        servico.Nome = input.Nome;
-        servico.Descricao = input.Descricao;
-        servico.Valor = input.Valor;
-
-        await _context.SaveChangesAsync();
-
         return Ok(servico);
     }
 
-    // PATCH: api/servicos/inativar/{id}
     [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {
-        var servico = await _context.Servicos.FindAsync(id);
+        var sucesso =
+            await _service.Inativar(id);
 
-        if (servico == null)
+        if (!sucesso)
             return NotFound("Serviço não encontrado");
-
-        servico.Ativo = false;
-
-        await _context.SaveChangesAsync();
 
         return Ok("Serviço inativado com sucesso");
     }
 
-    // PATCH: api/servicos/reativar/{id}
     [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {
-        var servico = await _context.Servicos.FindAsync(id);
+        var sucesso =
+            await _service.Reativar(id);
 
-        if (servico == null)
+        if (!sucesso)
             return NotFound("Serviço não encontrado");
-
-        servico.Ativo = true;
-
-        await _context.SaveChangesAsync();
 
         return Ok("Serviço reativado com sucesso");
     }
-} 
+}
