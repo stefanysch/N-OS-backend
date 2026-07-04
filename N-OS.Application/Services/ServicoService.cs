@@ -1,31 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using N_OS.Application.DTOs;
+﻿using N_OS.Application.DTOs;
+using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
-using N_OS.Infrastructure.Data;
+using N_OS.Domain.Interfaces;
 
-namespace N_OS.Infrastructure.Services;
+namespace N_OS.Application.Services;
 
-public class ServicoService
+public class ServicoService : IServicoService
 {
-    private readonly AppDbContext _context;
+    private readonly IServicoRepository _repository;
 
-    public ServicoService(AppDbContext context)
+    public ServicoService(IServicoRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     public async Task<List<Servico>> Listar()
     {
-        return await _context.Servicos.ToListAsync();
+        return await _repository.Listar();
     }
 
     public async Task<Servico?> BuscarPorId(int id)
     {
-        return await _context.Servicos.FindAsync(id);
+        return await _repository.BuscarPorId(id);
     }
 
-    public async Task<Servico> Criar(
-        ServicoCreateDTO input)
+    public async Task<Servico> Criar(ServicoCreateDTO input)
     {
         var servico = new Servico
         {
@@ -36,9 +35,8 @@ public class ServicoService
             Ativo = true
         };
 
-        _context.Servicos.Add(servico);
-
-        await _context.SaveChangesAsync();
+        await _repository.Criar(servico);
+        await _repository.SaveChanges();
 
         return servico;
     }
@@ -48,7 +46,7 @@ public class ServicoService
         ServicoUpdateDTO input)
     {
         var servico =
-            await _context.Servicos.FindAsync(id);
+            await _repository.BuscarPorId(id);
 
         if (servico == null)
             return null;
@@ -57,7 +55,8 @@ public class ServicoService
         servico.Descricao = input.Descricao;
         servico.Valor = input.Valor;
 
-        await _context.SaveChangesAsync();
+        await _repository.Atualizar(servico);
+        await _repository.SaveChanges();
 
         return servico;
     }
@@ -65,14 +64,15 @@ public class ServicoService
     public async Task<bool> Inativar(int id)
     {
         var servico =
-            await _context.Servicos.FindAsync(id);
+            await _repository.BuscarPorId(id);
 
         if (servico == null)
             return false;
 
         servico.Ativo = false;
 
-        await _context.SaveChangesAsync();
+        await _repository.Atualizar(servico);
+        await _repository.SaveChanges();
 
         return true;
     }
@@ -80,14 +80,15 @@ public class ServicoService
     public async Task<bool> Reativar(int id)
     {
         var servico =
-            await _context.Servicos.FindAsync(id);
+            await _repository.BuscarPorId(id);
 
         if (servico == null)
             return false;
 
         servico.Ativo = true;
 
-        await _context.SaveChangesAsync();
+        await _repository.Atualizar(servico);
+        await _repository.SaveChanges();
 
         return true;
     }

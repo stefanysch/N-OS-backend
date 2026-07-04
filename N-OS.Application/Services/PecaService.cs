@@ -1,27 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
-using N_OS.Application.DTOs;
+﻿using N_OS.Application.DTOs;
+using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
-using N_OS.Infrastructure.Data;
+using N_OS.Domain.Interfaces;
 
-namespace N_OS.Infrastructure.Services;
+namespace N_OS.Application.Services;
 
-public class PecaService
+public class PecaService : IPecaService
 {
-    private readonly AppDbContext _context;
+    private readonly IPecaRepository _repository;
 
-    public PecaService(AppDbContext context)
+    public PecaService(IPecaRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     public async Task<List<Peca>> Listar()
     {
-        return await _context.Pecas.ToListAsync();
+        return await _repository.Listar();
     }
 
     public async Task<Peca?> BuscarPorId(int id)
     {
-        return await _context.Pecas.FindAsync(id);
+        return await _repository.BuscarPorId(id);
     }
 
     public async Task<Peca> Criar(PecaCreateDTO input)
@@ -35,9 +35,8 @@ public class PecaService
             Ativo = true
         };
 
-        _context.Pecas.Add(peca);
-
-        await _context.SaveChangesAsync();
+        await _repository.Criar(peca);
+        await _repository.SaveChanges();
 
         return peca;
     }
@@ -46,8 +45,7 @@ public class PecaService
         int id,
         PecaUpdateDTO input)
     {
-        var peca =
-            await _context.Pecas.FindAsync(id);
+        var peca = await _repository.BuscarPorId(id);
 
         if (peca == null)
             return null;
@@ -56,37 +54,38 @@ public class PecaService
         peca.Descricao = input.Descricao;
         peca.Valor = input.Valor;
 
-        await _context.SaveChangesAsync();
+        await _repository.Atualizar(peca);
+        await _repository.SaveChanges();
 
         return peca;
     }
 
     public async Task<bool> Inativar(int id)
     {
-        var peca =
-            await _context.Pecas.FindAsync(id);
+        var peca = await _repository.BuscarPorId(id);
 
         if (peca == null)
             return false;
 
         peca.Ativo = false;
 
-        await _context.SaveChangesAsync();
+        await _repository.Atualizar(peca);
+        await _repository.SaveChanges();
 
         return true;
     }
 
     public async Task<bool> Reativar(int id)
     {
-        var peca =
-            await _context.Pecas.FindAsync(id);
+        var peca = await _repository.BuscarPorId(id);
 
         if (peca == null)
             return false;
 
         peca.Ativo = true;
 
-        await _context.SaveChangesAsync();
+        await _repository.Atualizar(peca);
+        await _repository.SaveChanges();
 
         return true;
     }

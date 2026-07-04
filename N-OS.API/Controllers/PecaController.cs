@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using N_OS.Application.DTOs;
-using N_OS.Infrastructure.Services;
+using N_OS.Application.Interfaces;
 
 namespace N_OS.API.Controllers;
 
@@ -8,10 +8,9 @@ namespace N_OS.API.Controllers;
 [Route("api/pecas")]
 public class PecaController : ControllerBase
 {
-    private readonly PecaService _service;
+    private readonly IPecaService _service;
 
-    public PecaController(
-        PecaService service)
+    public PecaController(IPecaService service)
     {
         _service = service;
     }
@@ -19,8 +18,7 @@ public class PecaController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var pecas =
-            await _service.Listar();
+        var pecas = await _service.Listar();
 
         return Ok(pecas);
     }
@@ -28,8 +26,7 @@ public class PecaController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var peca =
-            await _service.BuscarPorId(id);
+        var peca = await _service.BuscarPorId(id);
 
         if (peca == null)
             return NotFound("Peça não encontrada");
@@ -41,8 +38,7 @@ public class PecaController : ControllerBase
     public async Task<IActionResult> Post(
         [FromBody] PecaCreateDTO input)
     {
-        var peca =
-            await _service.Criar(input);
+        var peca = await _service.Criar(input);
 
         return CreatedAtAction(
             nameof(GetById),
@@ -56,8 +52,7 @@ public class PecaController : ControllerBase
         int id,
         [FromBody] PecaUpdateDTO input)
     {
-        var peca =
-            await _service.Atualizar(id, input);
+        var peca = await _service.Atualizar(id, input);
 
         if (peca == null)
             return NotFound("Peça não encontrada");
@@ -68,8 +63,7 @@ public class PecaController : ControllerBase
     [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {
-        var sucesso =
-            await _service.Inativar(id);
+        var sucesso = await _service.Inativar(id);
 
         if (!sucesso)
             return NotFound("Peça não encontrada");
@@ -80,8 +74,7 @@ public class PecaController : ControllerBase
     [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {
-        var sucesso =
-            await _service.Reativar(id);
+        var sucesso = await _service.Reativar(id);
 
         if (!sucesso)
             return NotFound("Peça não encontrada");

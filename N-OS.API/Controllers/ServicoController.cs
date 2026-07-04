@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using N_OS.Application.DTOs;
-using N_OS.Infrastructure.Services;
+using N_OS.Application.Interfaces;
 
 namespace N_OS.API.Controllers;
 
@@ -8,19 +8,17 @@ namespace N_OS.API.Controllers;
 [Route("api/servicos")]
 public class ServicosController : ControllerBase
 {
-    private readonly ServicoService _service;
+    private readonly IServicoService _servicoService;
 
-    public ServicosController(
-        ServicoService service)
+    public ServicosController(IServicoService servicoService)
     {
-        _service = service;
+        _servicoService = servicoService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var servicos =
-            await _service.Listar();
+        var servicos = await _servicoService.Listar();
 
         return Ok(servicos);
     }
@@ -28,11 +26,10 @@ public class ServicosController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var servico =
-            await _service.BuscarPorId(id);
+        var servico = await _servicoService.BuscarPorId(id);
 
         if (servico == null)
-            return NotFound("Serviço não encontrado");
+            return NotFound("Serviço não encontrado.");
 
         return Ok(servico);
     }
@@ -41,8 +38,7 @@ public class ServicosController : ControllerBase
     public async Task<IActionResult> Post(
         [FromBody] ServicoCreateDTO input)
     {
-        var servico =
-            await _service.Criar(input);
+        var servico = await _servicoService.Criar(input);
 
         return CreatedAtAction(
             nameof(GetById),
@@ -56,11 +52,10 @@ public class ServicosController : ControllerBase
         int id,
         [FromBody] ServicoUpdateDTO input)
     {
-        var servico =
-            await _service.Atualizar(id, input);
+        var servico = await _servicoService.Atualizar(id, input);
 
         if (servico == null)
-            return NotFound("Serviço não encontrado");
+            return NotFound("Serviço não encontrado.");
 
         return Ok(servico);
     }
@@ -68,24 +63,22 @@ public class ServicosController : ControllerBase
     [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {
-        var sucesso =
-            await _service.Inativar(id);
+        var sucesso = await _servicoService.Inativar(id);
 
         if (!sucesso)
-            return NotFound("Serviço não encontrado");
+            return NotFound("Serviço não encontrado.");
 
-        return Ok("Serviço inativado com sucesso");
+        return Ok("Serviço inativado com sucesso.");
     }
 
     [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {
-        var sucesso =
-            await _service.Reativar(id);
+        var sucesso = await _servicoService.Reativar(id);
 
         if (!sucesso)
-            return NotFound("Serviço não encontrado");
+            return NotFound("Serviço não encontrado.");
 
-        return Ok("Serviço reativado com sucesso");
+        return Ok("Serviço reativado com sucesso.");
     }
 }

@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using N_OS.Infrastructure.Services;
+using N_OS.Application.Interfaces;
+using N_OS.Application.Services;
+using N_OS.Domain.Interfaces;
 using N_OS.Infrastructure.Data;
+using N_OS.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +14,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
 
+builder.Services.AddScoped<IPecaRepository, PecaRepository>();
+builder.Services.AddScoped<IServicoRepository, ServicoRepository>();
 
-builder.Services.AddScoped<PecaService>();
-builder.Services.AddScoped<ServicoService>();
+builder.Services.AddScoped<IPecaService, PecaService>();
+builder.Services.AddScoped<IServicoService, ServicoService>();
 
 builder.Services.AddControllers();
 
