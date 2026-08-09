@@ -1,32 +1,36 @@
 # N-OS Backend
- 
-API do projeto **N-OS** desenvolvida em **C# com .NET**, seguindo os princípios de **DDD (Domain-Driven Design)** para garantir organização, manutenção e separação clara de responsabilidades.
- 
+
+API do projeto **N-OS**, desenvolvida em **C# com .NET**, seguindo os princípios de **DDD (Domain-Driven Design)** e separação de responsabilidades entre as camadas da aplicação.
+
 ---
- 
+
 ## 📁 Estrutura do Projeto
- 
-| Projeto | Responsabilidade |
-|---|---|
-| `N-OS.Domain` | Entidades e regras de negócio |
-| `N-OS.Application` | Casos de uso |
-| `N-OS.Infrastructure` | Persistência de dados e integrações |
-| `N-OS.API` | Controllers e Endpoints HTTP |
- 
+
+| Projeto               | Responsabilidade                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| `N-OS.Domain`         | Entidades, enums, value objects e conceitos centrais do domínio                           |
+| `N-OS.Application`    | DTOs, casos de uso, services e regras relacionadas à aplicação                            |
+| `N-OS.Infrastructure` | Persistência de dados, Entity Framework Core, PostgreSQL e implementação dos repositories |
+| `N-OS.API`            | Controllers, endpoints HTTP e configuração da aplicação                                   |
+
 ---
- 
+
 ## 🚀 Tecnologias
- 
-- .NET
-- C#
-- Entity Framework Core
-- PostgreSQL
+
+* C#
+* .NET 10
+* ASP.NET Core Web API
+* Entity Framework Core
+* PostgreSQL
+* Npgsql
+* Swagger / OpenAPI
+
 ---
- 
+
 ## ⚙️ Configuração
- 
+
 Crie um arquivo `appsettings.Development.json` no projeto da API com sua connection string local:
- 
+
 ```json
 {
   "ConnectionStrings": {
@@ -34,77 +38,107 @@ Crie um arquivo `appsettings.Development.json` no projeto da API com sua connect
   }
 }
 ```
- 
-> ⚠️ Este arquivo não deve ser versionado. Certifique-se de que está listado no `.gitignore`.
- 
+
 ---
- 
-## Banco de Dados
- 
-As migrations podem ser executadas de duas formas:
- 
+
+## 🗄️ Banco de Dados
+
+O projeto utiliza **PostgreSQL** para persistência dos dados e **Entity Framework Core** para mapeamento e gerenciamento das entidades.
+
+As migrations ficam no projeto `N-OS.Infrastructure`.
+
 ### Visual Studio — Console do Gerenciador de Pacotes
- 
+
+Para criar uma migration:
+
 ```powershell
 Add-Migration NomeDaMigration
+```
+
+Para aplicar as migrations:
+
+```powershell
 Update-Database
 ```
- 
-### VS Code / Terminal — .NET CLI
- 
-```bash
-dotnet ef migrations add NomeDaMigration
-dotnet ef database update
-```
- 
-> É necessário ter a ferramenta `dotnet-ef` instalada para uso via terminal.
- 
----
- 
-## API
- 
-Certifique-se de que o PostgreSQL está em execução antes de iniciar a aplicação.
- 
-### VS Code
- 
-Abra a pasta do backend e rode no terminal integrado:
- 
-```bash
-dotnet run
-```
- 
-### Prompt / PowerShell
- 
-Navegue até a pasta onde está o `.csproj` da API e execute:
- 
-```bash
-cd N-OS
-dotnet run
-```
- 
-### Visual Studio
- 
-Normalmente não é necessário usar `dotnet run`, pois a execução é feita pela própria IDE:
- 
-- ▶️ **Start / Iniciar**
-- `F5` — execução com debug
-- `Ctrl + F5` — execução sem debug
-O Visual Studio compila e sobe a API automaticamente.
- 
----
- 
-## 🔒 Boas Práticas Adotadas
- 
-- Configurações sensíveis não versionadas
-- Estrutura em camadas com DDD
-- Separação de responsabilidades
-- Organização voltada para escalabilidade futura
----
- 
-## 📬 Contato
- 
-Para dúvidas, feedbacks ou informações adicionais sobre o desenvolvimento deste projeto, sinta-se à vontade para entrar em contato:
- 
-- stefany@edu.unifil.br
- 
 
+### VS Code / Terminal — .NET CLI
+
+Para criar uma migration:
+
+```bash
+dotnet ef migrations add NomeDaMigration --project N-OS.Infrastructure --startup-project N-OS.API
+```
+
+Para aplicar as migrations:
+
+```bash
+dotnet ef database update --project N-OS.Infrastructure --startup-project N-OS.API
+```
+
+Para listar as migrations:
+
+```bash
+dotnet ef migrations list --project N-OS.Infrastructure --startup-project N-OS.API
+```
+
+É necessário ter a ferramenta `dotnet-ef` instalada para utilizar os comandos via terminal.
+
+Para instalar:
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+---
+
+## ▶️ API
+
+Certifique-se de que o **PostgreSQL está em execução** antes de iniciar a aplicação.
+
+### VS Code / Terminal
+
+Na raiz da solução:
+
+```bash
+dotnet run --project N-OS.API
+```
+
+Ou navegue até o projeto da API:
+
+```bash
+cd N-OS.API
+dotnet run
+```
+
+### Visual Studio
+
+Normalmente não é necessário utilizar `dotnet run`, pois a execução é feita pela própria IDE:
+
+* ▶️ **Start / Iniciar**
+* `F5` — execução com debug
+* `Ctrl + F5` — execução sem debug
+
+O Visual Studio compila e inicia a API automaticamente.
+
+---
+
+## 🔒 Boas Práticas Adotadas
+
+* Separação de responsabilidades entre as camadas
+* Organização baseada em DDD
+* Utilização de DTOs para entrada e saída de dados
+* Services para implementação dos casos de uso
+* Repositories para acesso aos dados
+* Entity Framework Core para persistência
+* Migrations para versionamento do banco de dados
+* Value Objects para representar conceitos do domínio
+* Configurações sensíveis não versionadas
+* Estrutura preparada para manutenção e evolução futura
+
+---
+
+## 📬 Contato
+
+Para dúvidas, feedbacks ou informações adicionais sobre o desenvolvimento deste projeto, entre em contato:
+
+* [stefany@edu.unifil.br](mailto:stefany@edu.unifil.br)
