@@ -14,7 +14,7 @@ public class PecaService : IPecaService
         _repository = repository;
     }
 
-    public async Task<List<Peca>> Listar()
+    public async Task<IEnumerable<Peca>> Listar()
     {
         return await _repository.Listar();
     }

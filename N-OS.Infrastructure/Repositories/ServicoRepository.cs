@@ -14,7 +14,7 @@ public class ServicoRepository : IServicoRepository
         _context = context;
     }
 
-    public async Task<List<Servico>> Listar()
+    public async Task<IEnumerable<Servico>> Listar()
     {
         return await _context.Servicos.ToListAsync();
     }

@@ -5,7 +5,7 @@ namespace N_OS.Application.Interfaces;
 
 public interface IServicoService
 {
-    Task<List<Servico>> Listar();
+    Task<IEnumerable<Servico>> Listar();
 
     Task<Servico?> BuscarPorId(int id);
 

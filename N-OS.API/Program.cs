@@ -14,11 +14,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
 
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<IVeiculoRepository, VeiculoRepository>();
 builder.Services.AddScoped<IPecaRepository, PecaRepository>();
 builder.Services.AddScoped<IServicoRepository, ServicoRepository>();
+builder.Services.AddScoped<IOrdemDeServicoRepository, OrdemDeServicoRepository>();
 
+builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<IVeiculoService, VeiculoService>();
 builder.Services.AddScoped<IPecaService, PecaService>();
 builder.Services.AddScoped<IServicoService, ServicoService>();
+builder.Services.AddScoped<IOrdemDeServicoService, OrdemDeServicoService>();
+
 
 builder.Services.AddControllers();
 
@@ -45,7 +52,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("frontend");
 
-app.MapGet("/", () => "API rodando 🚀");
+app.MapGet("/", () => "API rodando, é N-OS! 🚀");
 
 app.UseAuthorization();
 

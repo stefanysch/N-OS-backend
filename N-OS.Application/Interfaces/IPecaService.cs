@@ -5,7 +5,7 @@ namespace N_OS.Application.Interfaces;
 
 public interface IPecaService
 {
-    Task<List<Peca>> Listar();
+    Task<IEnumerable<Peca>> Listar();
 
     Task<Peca?> BuscarPorId(int id);
 

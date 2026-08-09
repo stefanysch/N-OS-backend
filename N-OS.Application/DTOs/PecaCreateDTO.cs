@@ -9,6 +9,7 @@ public class PecaCreateDTO
     [MaxLength(100, ErrorMessage = "O nome deve ter no máximo 100 caracteres.")]
     public string Nome { get; set; } = string.Empty;
 
+    [MinLength(3, ErrorMessage = "A descrição deve ter no mínimo 3 caracteres.")]
     [MaxLength(500, ErrorMessage = "A descrição deve ter no máximo 500 caracteres.")]
     public string? Descricao { get; set; }
 

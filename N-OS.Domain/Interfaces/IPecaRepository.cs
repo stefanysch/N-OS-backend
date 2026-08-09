@@ -4,7 +4,7 @@ namespace N_OS.Domain.Interfaces;
 
 public interface IPecaRepository
 {
-    Task<List<Peca>> Listar();
+    Task<IEnumerable<Peca>> Listar();
 
     Task<Peca?> BuscarPorId(int id);
 

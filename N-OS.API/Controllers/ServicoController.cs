@@ -6,11 +6,11 @@ namespace N_OS.API.Controllers;
 
 [ApiController]
 [Route("api/servicos")]
-public class ServicosController : ControllerBase
+public class ServicoController : ControllerBase
 {
     private readonly IServicoService _servicoService;
 
-    public ServicosController(IServicoService servicoService)
+    public ServicoController(IServicoService servicoService)
     {
         _servicoService = servicoService;
     }

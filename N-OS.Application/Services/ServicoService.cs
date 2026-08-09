@@ -14,7 +14,7 @@ public class ServicoService : IServicoService
         _repository = repository;
     }
 
-    public async Task<List<Servico>> Listar()
+    public async Task<IEnumerable<Servico>> Listar()
     {
         return await _repository.Listar();
     }
@@ -45,8 +45,7 @@ public class ServicoService : IServicoService
         int id,
         ServicoUpdateDTO input)
     {
-        var servico =
-            await _repository.BuscarPorId(id);
+        var servico = await _repository.BuscarPorId(id);
 
         if (servico == null)
             return null;
@@ -63,8 +62,7 @@ public class ServicoService : IServicoService
 
     public async Task<bool> Inativar(int id)
     {
-        var servico =
-            await _repository.BuscarPorId(id);
+        var servico = await _repository.BuscarPorId(id);
 
         if (servico == null)
             return false;
@@ -79,8 +77,7 @@ public class ServicoService : IServicoService
 
     public async Task<bool> Reativar(int id)
     {
-        var servico =
-            await _repository.BuscarPorId(id);
+        var servico = await _repository.BuscarPorId(id);
 
         if (servico == null)
             return false;

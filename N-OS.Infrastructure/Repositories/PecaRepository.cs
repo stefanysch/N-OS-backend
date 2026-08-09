@@ -14,7 +14,7 @@ public class PecaRepository : IPecaRepository
         _context = context;
     }
 
-    public async Task<List<Peca>> Listar()
+    public async Task<IEnumerable<Peca>> Listar()
     {
         return await _context.Pecas.ToListAsync();
     }
