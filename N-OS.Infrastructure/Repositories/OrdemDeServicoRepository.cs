@@ -52,6 +52,14 @@ public class OrdemDeServicoRepository : IOrdemDeServicoRepository
         return Task.CompletedTask;
     }
 
+    public async Task<bool> PossuiOrdemDeServicoAtiva(int veiculoId)
+    {
+        return await _context.OrdensDeServico
+            .AnyAsync(os =>
+                os.VeiculoId == veiculoId &&
+                os.Ativo);
+    }
+
     public async Task SaveChanges()
     {
         await _context.SaveChangesAsync();

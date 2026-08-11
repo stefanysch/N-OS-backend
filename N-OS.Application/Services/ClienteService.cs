@@ -9,10 +9,14 @@ namespace N_OS.Application.Services;
 public class ClienteService : IClienteService
 {
     private readonly IClienteRepository _repository;
+    private readonly IOrdemDeServicoRepository _ordemDeServicoRepository;
 
-    public ClienteService(IClienteRepository repository)
+    public ClienteService(
+        IClienteRepository repository,
+        IOrdemDeServicoRepository ordemDeServicoRepository)
     {
         _repository = repository;
+        _ordemDeServicoRepository = ordemDeServicoRepository;
     }
 
     public async Task<IEnumerable<ClienteResponseDTO>> Listar()
@@ -94,6 +98,7 @@ public class ClienteService : IClienteService
         return MapearParaResponse(cliente);
     }
 
+
     public async Task<bool> Inativar(int id)
     {
         var cliente = await _repository.BuscarPorId(id);
@@ -101,13 +106,34 @@ public class ClienteService : IClienteService
         if (cliente == null)
             return false;
 
+        var veiculos = await _repository.ListarVeiculos(id);
+
+        foreach (var veiculo in veiculos)
+        {
+            var possuiOSAtiva =
+                await _ordemDeServicoRepository
+                    .PossuiOrdemDeServicoAtiva(veiculo.Id);
+
+            if (possuiOSAtiva)
+            {
+                throw new InvalidOperationException(
+                    $"Não é possível inativar o cliente porque o veículo " +
+                    $"{veiculo.Placa} possui uma ordem de serviço ativa.");
+            }
+        }
+
         cliente.Ativo = false;
 
-        await _repository.Atualizar(cliente);
+        foreach (var veiculo in veiculos)
+        {
+            veiculo.Ativo = false;
+        }
+
         await _repository.SaveChanges();
 
         return true;
     }
+
 
     public async Task<bool> Reativar(int id)
     {
@@ -116,7 +142,14 @@ public class ClienteService : IClienteService
         if (cliente == null)
             return false;
 
+        var veiculos = await _repository.ListarVeiculos(id);
+
         cliente.Ativo = true;
+
+        foreach (var veiculo in veiculos)
+        {
+            veiculo.Ativo = true;
+        }
 
         await _repository.Atualizar(cliente);
         await _repository.SaveChanges();

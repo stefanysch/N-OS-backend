@@ -42,6 +42,13 @@ public class ClienteRepository : IClienteRepository
         return Task.CompletedTask;
     }
 
+    public async Task<IEnumerable<Veiculo>> ListarVeiculos(int clienteId)
+    {
+        return await _context.Veiculos
+            .Where(v => v.ClienteId == clienteId)
+            .ToListAsync();
+    }
+
     public async Task SaveChanges()
     {
         await _context.SaveChangesAsync();

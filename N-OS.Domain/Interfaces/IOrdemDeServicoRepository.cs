@@ -12,5 +12,7 @@ public interface IOrdemDeServicoRepository
 
     Task Atualizar(OrdemDeServico ordemDeServico);
 
+    Task<bool> PossuiOrdemDeServicoAtiva(int veiculoId);
+
     Task SaveChanges();
 }

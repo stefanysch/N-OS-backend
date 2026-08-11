@@ -35,6 +35,12 @@ public class VeiculoRepository : IVeiculoRepository
             .FirstOrDefaultAsync(v => v.Id == id);
     }
 
+    public async Task<Cliente?> BuscarCliente(int clienteId)
+    {
+        return await _context.Clientes
+            .FirstOrDefaultAsync(c => c.Id == clienteId);
+    }
+
     public Task Criar(Veiculo veiculo)
     {
         _context.Veiculos.Add(veiculo);
@@ -47,6 +53,14 @@ public class VeiculoRepository : IVeiculoRepository
         _context.Veiculos.Update(veiculo);
 
         return Task.CompletedTask;
+    }
+
+    public async Task<bool> PossuiOrdemDeServicoAtiva(int veiculoId)
+    {
+        return await _context.OrdensDeServico
+            .AnyAsync(os =>
+                os.VeiculoId == veiculoId &&
+                os.Ativo);
     }
 
     public async Task SaveChanges()

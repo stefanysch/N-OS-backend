@@ -12,5 +12,7 @@ public interface IClienteRepository
 
     Task Atualizar(Cliente cliente);
 
+    Task<IEnumerable<Veiculo>> ListarVeiculos(int clienteId); 
+
     Task SaveChanges();
 }

@@ -14,5 +14,9 @@ public interface IVeiculoRepository
 
     Task Atualizar(Veiculo veiculo);
 
+    Task<bool> PossuiOrdemDeServicoAtiva(int veiculoId);
+
+    Task<Cliente?> BuscarCliente(int clienteId);
+
     Task SaveChanges();
 }

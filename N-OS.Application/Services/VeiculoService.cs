@@ -33,6 +33,20 @@ public class VeiculoService : IVeiculoService
 
     public async Task<VeiculoResponseDTO> Criar(VeiculoCreateDTO input)
     {
+        var cliente = await _repository.BuscarCliente(input.ClienteId);
+
+        if (cliente == null)
+        {
+            throw new ArgumentException(
+                $"Cliente com ID {input.ClienteId} não encontrado.");
+        }
+
+        if (!cliente.Ativo)
+        {
+            throw new ArgumentException(
+                $"Cliente com ID {input.ClienteId} está inativo.");
+        }
+
         var veiculo = new Veiculo
         {
             ClienteId = input.ClienteId,
@@ -81,6 +95,15 @@ public class VeiculoService : IVeiculoService
 
         if (veiculo == null)
             return false;
+
+        var possuiOrdemDeServicoAtiva =
+            await _repository.PossuiOrdemDeServicoAtiva(id);
+
+        if (possuiOrdemDeServicoAtiva)
+        {
+            throw new ArgumentException(
+                "Não é possível inativar o veículo porque ele possui uma ordem de serviço ativa.");
+        }
 
         veiculo.Ativo = false;
 
