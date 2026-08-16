@@ -21,6 +21,13 @@ public class VeiculoService : IVeiculoService
         return veiculos.Select(MapearParaResponse);
     }
 
+    public async Task<IEnumerable<VeiculoResponseDTO>> ListarPorCliente(int clienteId)
+    {
+        var veiculos = await _repository.ListarPorCliente(clienteId);
+
+        return veiculos.Select(MapearParaResponse);
+    }
+
     public async Task<VeiculoResponseDTO?> BuscarPorId(int id)
     {
         var veiculo = await _repository.BuscarPorId(id);

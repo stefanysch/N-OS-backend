@@ -19,6 +19,10 @@ Task<OrdemDeServicoResponseDTO?> BuscarPorId(int id);
         int id,
         OrdemDeServicoStatusDTO input);
 
+    Task<OrdemDeServicoResponseDTO?> RemoverItem(
+        int id,
+        int itemId);
+
     Task<bool> Inativar(int id);
 
     Task<bool> Reativar(int id);

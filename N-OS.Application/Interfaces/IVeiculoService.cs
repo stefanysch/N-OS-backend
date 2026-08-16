@@ -6,6 +6,8 @@ public interface IVeiculoService
 {
     Task<IEnumerable<VeiculoResponseDTO>> Listar();
 
+    Task<IEnumerable<VeiculoResponseDTO>> ListarPorCliente(int clienteId);
+
     Task<VeiculoResponseDTO?> BuscarPorId(int id);
 
     Task<VeiculoResponseDTO> Criar(VeiculoCreateDTO input);

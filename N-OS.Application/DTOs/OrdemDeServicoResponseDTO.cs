@@ -14,11 +14,11 @@ public class OrdemDeServicoResponseDTO
 
     public decimal ValorTotal { get; set; }
 
+    public decimal Desconto { get; set; }
+
     public DateTime DataAbertura { get; set; }
 
     public bool Ativo { get; set; }
 
-    public List<ItemOSResponseDTO> Itens { get; set; }
-        = new();
-
+    public List<ItemOSResponseDTO> Itens { get; set; } = new();
 }

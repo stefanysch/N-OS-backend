@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Servico> Servicos => Set<Servico>();
     public DbSet<OrdemDeServico> OrdensDeServico { get; set; }
     public DbSet<ItemOS> ItensOS { get; set; }
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +69,12 @@ public class AppDbContext : DbContext
                 .WithOne(v => v.Cliente)
                 .HasForeignKey(v => v.ClienteId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Usuario>(usuario =>
+        {
+            usuario.HasIndex(u => u.Email)
+                .IsUnique();
         });
     }
 }

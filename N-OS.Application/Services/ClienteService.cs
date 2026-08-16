@@ -106,23 +106,20 @@ public class ClienteService : IClienteService
         if (cliente == null)
             return false;
 
-        var veiculos = await _repository.ListarVeiculos(id);
+        var placasDeVeiculosComOSAtiva =
+                await _repository.PlacasDeVeiculosComOSAtiva(id);
 
-        foreach (var veiculo in veiculos)
+        if (placasDeVeiculosComOSAtiva.Any())
         {
-            var possuiOSAtiva =
-                await _ordemDeServicoRepository
-                    .PossuiOrdemDeServicoAtiva(veiculo.Id);
-
-            if (possuiOSAtiva)
-            {
-                throw new InvalidOperationException(
-                    $"Não é possível inativar o cliente porque o veículo " +
-                    $"{veiculo.Placa} possui uma ordem de serviço ativa.");
-            }
+            var placas = string.Join(", ", placasDeVeiculosComOSAtiva);
+            throw new InvalidOperationException(
+                $"Não é possível inativar o cliente porque o(s) veículo(s) [{placas}] " +
+                $"possui(em) ordem(ns) de serviço ativa(s).");
         }
 
         cliente.Ativo = false;
+
+        var veiculos = await _repository.ListarVeiculos(id);
 
         foreach (var veiculo in veiculos)
         {

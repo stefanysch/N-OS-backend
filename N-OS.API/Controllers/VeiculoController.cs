@@ -23,6 +23,14 @@ public class VeiculoController : ControllerBase
         return Ok(veiculos);
     }
 
+    [HttpGet("cliente/{clienteId}")]
+    public async Task<IActionResult> GetByCliente(int clienteId)
+    {
+        var veiculos = await _veiculoService.ListarPorCliente(clienteId);
+
+        return Ok(veiculos);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {

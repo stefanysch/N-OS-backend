@@ -34,7 +34,8 @@ public class OrdemDeServicoService : IOrdemDeServicoService
 
     public async Task<OrdemDeServicoResponseDTO?> BuscarPorId(int id)
     {
-        var ordemDeServico = await _repository.BuscarPorId(id);
+        var ordemDeServico =
+            await _repository.BuscarPorId(id);
 
         if (ordemDeServico == null)
             return null;
@@ -52,11 +53,17 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         var ordemDeServico = new OrdemDeServico
         {
             VeiculoId = input.VeiculoId,
+
             DescricaoProblema = input.DescricaoProblema,
+
             Observacoes = input.Observacoes ?? string.Empty,
+
             Status = StatusOS.Aguardando,
-            ValorTotal = 0,
+
+            Desconto = input.Desconto,
+
             DataAbertura = DateTime.UtcNow,
+
             Ativo = true
         };
 
@@ -67,10 +74,18 @@ public class OrdemDeServicoService : IOrdemDeServicoService
             ordemDeServico.ItensOS.Add(item);
         }
 
-        ordemDeServico.ValorTotal =
+        var subtotal =
             ordemDeServico.ItensOS.Sum(item => item.Subtotal);
 
+        ValidarDesconto(
+            subtotal,
+            ordemDeServico.Desconto);
+
+        ordemDeServico.ValorTotal =
+            subtotal - ordemDeServico.Desconto;
+
         await _repository.Criar(ordemDeServico);
+
         await _repository.SaveChanges();
 
         return MapearResponse(ordemDeServico);
@@ -85,11 +100,15 @@ public class OrdemDeServicoService : IOrdemDeServicoService
 
         if (ordemDeServico == null)
             return null;
+
         ordemDeServico.DescricaoProblema =
             input.DescricaoProblema;
 
         ordemDeServico.Observacoes =
             input.Observacoes ?? string.Empty;
+
+        ordemDeServico.Desconto =
+            input.Desconto;
 
         // no update, novos itens são adicionados, os itens existentes não são removidos.
         if (input.Itens != null && input.Itens.Count > 0)
@@ -104,11 +123,19 @@ public class OrdemDeServicoService : IOrdemDeServicoService
             }
         }
 
-        // recalcula o valor considerando todos os itens
-        ordemDeServico.ValorTotal =
+        // recalcula o subtotal considerando todos os itens.
+        var subtotal =
             ordemDeServico.ItensOS.Sum(item => item.Subtotal);
 
+        ValidarDesconto(
+            subtotal,
+            ordemDeServico.Desconto);
+
+        ordemDeServico.ValorTotal =
+            subtotal - ordemDeServico.Desconto;
+
         await _repository.Atualizar(ordemDeServico);
+
         await _repository.SaveChanges();
 
         return MapearResponse(ordemDeServico);
@@ -127,6 +154,52 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         ordemDeServico.Status = input.Status;
 
         await _repository.Atualizar(ordemDeServico);
+
+        await _repository.SaveChanges();
+
+        return MapearResponse(ordemDeServico);
+    }
+
+    public async Task<OrdemDeServicoResponseDTO?> RemoverItem(
+        int id,
+        int itemId)
+    {
+        var ordemDeServico =
+            await _repository.BuscarPorId(id);
+
+        if (ordemDeServico == null)
+            return null;
+
+        var item =
+            ordemDeServico.ItensOS
+                .FirstOrDefault(i => i.Id == itemId);
+
+        if (item == null)
+        {
+            throw new ArgumentException(
+                "Item não encontrado nesta ordem de serviço.");
+        }
+
+        if (ordemDeServico.ItensOS.Count == 1)
+        {
+            throw new ArgumentException(
+                "A ordem de serviço deve possuir pelo menos um item.");
+        }
+
+        ordemDeServico.ItensOS.Remove(item);
+
+        var subtotal =
+            ordemDeServico.ItensOS.Sum(i => i.Subtotal);
+
+        ValidarDesconto(
+            subtotal,
+            ordemDeServico.Desconto);
+
+        ordemDeServico.ValorTotal =
+            subtotal - ordemDeServico.Desconto;
+
+        await _repository.Atualizar(ordemDeServico);
+
         await _repository.SaveChanges();
 
         return MapearResponse(ordemDeServico);
@@ -143,6 +216,7 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         ordemDeServico.Ativo = false;
 
         await _repository.Atualizar(ordemDeServico);
+
         await _repository.SaveChanges();
 
         return true;
@@ -159,6 +233,7 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         ordemDeServico.Ativo = true;
 
         await _repository.Atualizar(ordemDeServico);
+
         await _repository.SaveChanges();
 
         return true;
@@ -205,6 +280,23 @@ public class OrdemDeServicoService : IOrdemDeServicoService
                 throw new ArgumentException(
                     "Cada item deve possuir pelo menos uma peça ou um serviço.");
             }
+        }
+    }
+
+    private static void ValidarDesconto(
+        decimal subtotal,
+        decimal desconto)
+    {
+        if (desconto < 0)
+        {
+            throw new ArgumentException(
+                "O desconto não pode ser negativo.");
+        }
+
+        if (desconto > subtotal)
+        {
+            throw new ArgumentException(
+                "O desconto não pode ser maior que o valor dos itens.");
         }
     }
 
@@ -266,25 +358,51 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         return new OrdemDeServicoResponseDTO
         {
             Id = ordemDeServico.Id,
+
             VeiculoId = ordemDeServico.VeiculoId,
+
             Status = (int)ordemDeServico.Status,
-            DescricaoProblema = ordemDeServico.DescricaoProblema,
-            Observacoes = ordemDeServico.Observacoes,
-            ValorTotal = ordemDeServico.ValorTotal,
-            DataAbertura = ordemDeServico.DataAbertura,
-            Ativo = ordemDeServico.Ativo,
 
-            Itens = ordemDeServico.ItensOS.Select(item =>
-                new ItemOSResponseDTO
-                {
-                    Id = item.Id,
-                    Quantidade = item.Quantidade,
-                    ValorAplicado = item.ValorAplicado,
-                    Subtotal = item.Subtotal,
+            DescricaoProblema =
+                ordemDeServico.DescricaoProblema,
 
-                    PecaNome = item.Peca?.Nome,
-                    ServicoNome = item.Servico?.Nome
-                }).ToList()
+            Observacoes =
+                ordemDeServico.Observacoes,
+
+            Desconto =
+                ordemDeServico.Desconto,
+
+            ValorTotal =
+                ordemDeServico.ValorTotal,
+
+            DataAbertura =
+                ordemDeServico.DataAbertura,
+
+            Ativo =
+                ordemDeServico.Ativo,
+
+            Itens =
+                ordemDeServico.ItensOS
+                    .Select(item => new ItemOSResponseDTO
+                    {
+                        Id = item.Id,
+
+                        Quantidade =
+                            item.Quantidade,
+
+                        ValorAplicado =
+                            item.ValorAplicado,
+
+                        Subtotal =
+                            item.Subtotal,
+
+                        PecaNome =
+                            item.Peca?.Nome,
+
+                        ServicoNome =
+                            item.Servico?.Nome
+                    })
+                    .ToList()
         };
     }
 }

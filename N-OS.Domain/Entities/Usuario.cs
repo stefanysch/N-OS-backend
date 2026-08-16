@@ -1,11 +1,11 @@
-﻿namespace N_OS.Domain.Entities;
+namespace N_OS.Domain.Entities;
 
-public class Servico
+public class Usuario
 {
     public int Id { get; set; }
     public string Nome { get; set; } = string.Empty;
-    public string Descricao { get; set; } = string.Empty;
-    public decimal Valor { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string SenhaHash { get; set; } = string.Empty;
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
     public bool Ativo { get; set; } = true;
 }

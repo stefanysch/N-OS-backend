@@ -89,6 +89,28 @@ public class OrdemDeServicoController : ControllerBase
         return Ok(ordemDeServico);
     }
 
+    [HttpDelete("{id}/itens/{itemId}")]
+    public async Task<IActionResult> RemoverItem(int id, int itemId)
+    {
+        try
+        {
+            var ordemDeServico =
+                await _ordemDeServicoService.RemoverItem(id, itemId);
+
+            if (ordemDeServico == null)
+                return NotFound("Ordem de serviço não encontrada");
+
+            return Ok(ordemDeServico);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
+    }
+
     [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {

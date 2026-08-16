@@ -15,5 +15,8 @@ public class OrdemDeServicoCreateDTO
     [MaxLength(500, ErrorMessage = "A observação deve ter no máximo 500 caracteres.")]
     public string? Observacoes { get; set; }
 
+    [Range(0, double.MaxValue, ErrorMessage = "O desconto não pode ser negativo.")]
+    public decimal Desconto { get; set; }
+
     public List<ItemOSCreateDTO> Itens { get; set; } = [];
 }

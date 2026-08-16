@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using N_OS.Domain.Entities;
+using N_OS.Domain.Enums;
 using N_OS.Domain.Interfaces;
 using N_OS.Infrastructure.Data;
 
@@ -47,6 +48,18 @@ public class ClienteRepository : IClienteRepository
         return await _context.Veiculos
             .Where(v => v.ClienteId == clienteId)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<string>> PlacasDeVeiculosComOSAtiva(int clienteId)
+    {
+        return await _context.OrdensDeServico
+        .Where(os => 
+            os.Veiculo.ClienteId == clienteId &&
+            os.Status != StatusOS.Concluida &&
+            os.Ativo)
+        .Select(os => os.Veiculo.Placa)
+        .Distinct()
+        .ToListAsync();
     }
 
     public async Task SaveChanges()

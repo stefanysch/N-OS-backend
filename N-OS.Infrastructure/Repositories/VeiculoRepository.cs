@@ -18,6 +18,7 @@ public class VeiculoRepository : IVeiculoRepository
     {
         return await _context.Veiculos
             .Include(v => v.Cliente)
+            .Include(v => v.OrdensDeServico)
             .ToListAsync();
     }
 
@@ -32,6 +33,7 @@ public class VeiculoRepository : IVeiculoRepository
     {
         return await _context.Veiculos
             .Include(v => v.Cliente)
+            .Include(v => v.OrdensDeServico)
             .FirstOrDefaultAsync(v => v.Id == id);
     }
 
