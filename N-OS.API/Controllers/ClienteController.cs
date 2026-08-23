@@ -38,13 +38,23 @@ public class ClienteController : ControllerBase
     public async Task<IActionResult> Post(
         [FromBody] ClienteCreateDTO input)
     {
-        var cliente = await _clienteService.Criar(input);
+        try
+        {
+            var cliente = await _clienteService.Criar(input);
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = cliente.Id },
-            cliente
-        );
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = cliente.Id },
+                cliente
+            );
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
     }
 
     [HttpPut("{id}")]
@@ -52,23 +62,43 @@ public class ClienteController : ControllerBase
         int id,
         [FromBody] ClienteUpdateDTO input)
     {
-        var cliente = await _clienteService.Atualizar(id, input);
+        try
+        {
+            var cliente = await _clienteService.Atualizar(id, input);
 
-        if (cliente == null)
-            return NotFound("Cliente não encontrado");
+            if (cliente == null)
+                return NotFound("Cliente não encontrado");
 
-        return Ok(cliente);
+            return Ok(cliente);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
     }
 
     [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {
-        var sucesso = await _clienteService.Inativar(id);
+        try
+        {
+            var sucesso = await _clienteService.Inativar(id);
 
-        if (!sucesso)
-            return NotFound("Cliente não encontrado");
+            if (!sucesso)
+                return NotFound("Cliente não encontrado");
 
-        return Ok("Cliente inativado com sucesso");
+            return Ok("Cliente inativado com sucesso");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
     }
 
     [HttpPatch("reativar/{id}")]

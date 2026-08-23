@@ -38,6 +38,19 @@ public class ClienteService : IClienteService
 
     public async Task<ClienteResponseDTO> Criar(ClienteCreateDTO input)
     {
+        var documento = new Documento(
+            input.TipoDocumento,
+            input.Documento);
+
+        var clienteExistente =
+            await _repository.BuscarPorDocumento(documento.Numero);
+
+        if (clienteExistente != null)
+        {
+            throw new ArgumentException(
+                "Já existe um cliente cadastrado com este documento.");
+        }
+
         var cliente = new Cliente
         {
             Nome = input.Nome,
@@ -46,11 +59,9 @@ public class ClienteService : IClienteService
             CriadoEm = DateTime.UtcNow,
             Ativo = true,
 
-            Documento = new Documento(
-                input.TipoDocumento,
-                input.Documento),
+            Documento = documento,
 
-            Endereco = new Endereco(
+            Endereco = MontarEndereco(
                 input.Cep,
                 input.Logradouro,
                 input.Numero,
@@ -75,15 +86,25 @@ public class ClienteService : IClienteService
         if (cliente == null)
             return null;
 
-        cliente.Nome = input.Nome;
-        cliente.Telefone = input.Telefone;
-        cliente.Email = input.Email ?? string.Empty;
-
-        cliente.Documento = new Documento(
+        var documento = new Documento(
             input.TipoDocumento,
             input.Documento);
 
-        cliente.Endereco = new Endereco(
+        var clienteExistente =
+            await _repository.BuscarPorDocumento(documento.Numero);
+
+        if (clienteExistente != null && clienteExistente.Id != id)
+        {
+            throw new ArgumentException(
+                "Já existe um cliente cadastrado com este documento.");
+        }
+
+        cliente.Nome = input.Nome;
+        cliente.Telefone = input.Telefone;
+        cliente.Email = input.Email ?? string.Empty;
+        cliente.Documento = documento;
+
+        cliente.Endereco = MontarEndereco(
             input.Cep,
             input.Logradouro,
             input.Numero,
@@ -96,6 +117,40 @@ public class ClienteService : IClienteService
         await _repository.SaveChanges();
 
         return MapearParaResponse(cliente);
+    }
+
+    /// endereço é opcional como um todo, se nenhum campo foi informado,
+    /// o cliente fica sem endereço (null). se ao menos um campo veio
+    /// preenchido, o Value Object exige que o conjunto seja válido/completo.
+
+    private static Endereco? MontarEndereco(
+        string? cep,
+        string? logradouro,
+        string? numero,
+        string? bairro,
+        string? cidade,
+        string? estado,
+        string? complemento)
+    {
+        var algumCampoPreenchido =
+            !string.IsNullOrWhiteSpace(cep) ||
+            !string.IsNullOrWhiteSpace(logradouro) ||
+            !string.IsNullOrWhiteSpace(numero) ||
+            !string.IsNullOrWhiteSpace(bairro) ||
+            !string.IsNullOrWhiteSpace(cidade) ||
+            !string.IsNullOrWhiteSpace(estado);
+
+        if (!algumCampoPreenchido)
+            return null;
+
+        return new Endereco(
+            cep ?? string.Empty,
+            logradouro ?? string.Empty,
+            numero ?? string.Empty,
+            bairro ?? string.Empty,
+            cidade ?? string.Empty,
+            estado ?? string.Empty,
+            complemento);
     }
 
 
@@ -166,13 +221,13 @@ public class ClienteService : IClienteService
             Telefone = cliente.Telefone,
             Email = cliente.Email,
 
-            Cep = cliente.Endereco.Cep,
-            Logradouro = cliente.Endereco.Logradouro,
-            Numero = cliente.Endereco.Numero,
-            Complemento = cliente.Endereco.Complemento,
-            Bairro = cliente.Endereco.Bairro,
-            Cidade = cliente.Endereco.Cidade,
-            Estado = cliente.Endereco.Estado,
+            Cep = cliente.Endereco?.Cep,
+            Logradouro = cliente.Endereco?.Logradouro,
+            Numero = cliente.Endereco?.Numero,
+            Complemento = cliente.Endereco?.Complemento,
+            Bairro = cliente.Endereco?.Bairro,
+            Cidade = cliente.Endereco?.Cidade,
+            Estado = cliente.Endereco?.Estado,
 
             CriadoEm = cliente.CriadoEm,
             Ativo = cliente.Ativo,

@@ -46,13 +46,23 @@ public class VeiculoController : ControllerBase
     public async Task<IActionResult> Post(
         [FromBody] VeiculoCreateDTO input)
     {
-        var veiculo = await _veiculoService.Criar(input);
+        try
+        {
+            var veiculo = await _veiculoService.Criar(input);
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = veiculo.Id },
-            veiculo
-        );
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = veiculo.Id },
+                veiculo
+            );
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
     }
 
     [HttpPut("{id}")]
@@ -71,22 +81,42 @@ public class VeiculoController : ControllerBase
     [HttpPatch("inativar/{id}")]
     public async Task<IActionResult> Inativar(int id)
     {
-        var sucesso = await _veiculoService.Inativar(id);
+        try
+        {
+            var sucesso = await _veiculoService.Inativar(id);
 
-        if (!sucesso)
-            return NotFound("Veículo não encontrado");
+            if (!sucesso)
+                return NotFound("Veículo não encontrado");
 
-        return Ok("Veículo inativado com sucesso");
+            return Ok("Veículo inativado com sucesso");
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
     }
 
     [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {
-        var sucesso = await _veiculoService.Reativar(id);
+        try
+        {
+            var sucesso = await _veiculoService.Reativar(id);
 
-        if (!sucesso)
-            return NotFound("Veículo não encontrado");
+            if (!sucesso)
+                return NotFound("Veículo não encontrado");
 
-        return Ok("Veículo reativado com sucesso");
+            return Ok("Veículo reativado com sucesso");
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
     }
 }

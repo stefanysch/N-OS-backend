@@ -127,6 +127,12 @@ public class VeiculoService : IVeiculoService
         if (veiculo == null)
             return false;
 
+        if (!veiculo.Cliente.Ativo)
+        {
+            throw new ArgumentException(
+                "Não é possível reativar o veículo porque o cliente está inativo. Reative o cliente primeiro.");
+        }
+
         veiculo.Ativo = true;
 
         await _repository.Atualizar(veiculo);

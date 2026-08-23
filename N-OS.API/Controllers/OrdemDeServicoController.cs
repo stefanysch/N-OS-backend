@@ -126,12 +126,22 @@ public class OrdemDeServicoController : ControllerBase
     [HttpPatch("reativar/{id}")]
     public async Task<IActionResult> Reativar(int id)
     {
-        var sucesso =
-            await _ordemDeServicoService.Reativar(id);
+        try
+        {
+            var sucesso =
+                await _ordemDeServicoService.Reativar(id);
 
-        if (!sucesso)
-            return NotFound("Ordem de serviço não encontrada");
+            if (!sucesso)
+                return NotFound("Ordem de serviço não encontrada");
 
-        return Ok("Ordem de serviço reativada com sucesso");
+            return Ok("Ordem de serviço reativada com sucesso");
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                mensagem = ex.Message
+            });
+        }
     }
 }

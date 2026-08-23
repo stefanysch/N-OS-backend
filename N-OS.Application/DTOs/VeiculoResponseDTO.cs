@@ -14,7 +14,7 @@ public class VeiculoResponseDTO
 
     public int Ano { get; set; }
 
-    public string Cor { get; set; } = string.Empty;
+    public string? Cor { get; set; } 
 
     public string? Chassi { get; set; }
 

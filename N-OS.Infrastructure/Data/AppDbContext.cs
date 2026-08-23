@@ -32,10 +32,17 @@ public class AppDbContext : DbContext
                 documento.Property(d => d.Numero)
                     .HasColumnName("Documento")
                     .HasMaxLength(14);
+
+                documento.HasIndex(d => d.Numero)
+                    .IsUnique();
             });
 
             cliente.OwnsOne(c => c.Endereco, endereco =>
             {
+                endereco.ToTable("ClienteEnderecos");
+
+                endereco.WithOwner().HasForeignKey("ClienteId");
+
                 endereco.Property(e => e.Cep)
                     .HasColumnName("Cep")
                     .HasMaxLength(9);

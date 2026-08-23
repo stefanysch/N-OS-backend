@@ -3,7 +3,7 @@ using N_OS.Domain.Enums;
 
 namespace N_OS.Domain.ValueObjects;
 
-public class Documento
+public class Documento : ValueObject
 {
     public TipoDocumento Tipo { get; private set; }
     public string Numero { get; private set; }
@@ -98,4 +98,10 @@ public class Documento
     }
 
     public override string ToString() => Numero;
+
+    protected override IEnumerable<object?> GetEqualityComponents()
+    {
+        yield return Tipo;
+        yield return Numero;
+    }
 }

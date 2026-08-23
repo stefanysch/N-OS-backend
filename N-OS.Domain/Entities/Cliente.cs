@@ -9,7 +9,7 @@ public class Cliente
     public Documento Documento { get; set; } = null!;
     public string Telefone { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public Endereco Endereco { get; set; } = null!;
+    public Endereco? Endereco { get; set; }
     public ICollection<Veiculo> Veiculos { get; set; } = [];
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
     public bool Ativo { get; set; } = true;

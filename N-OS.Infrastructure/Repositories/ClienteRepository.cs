@@ -29,6 +29,12 @@ public class ClienteRepository : IClienteRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Cliente?> BuscarPorDocumento(string numero)
+    {
+        return await _context.Clientes
+            .FirstOrDefaultAsync(c => c.Documento.Numero == numero);
+    }
+
     public Task Criar(Cliente cliente)
     {
         _context.Clientes.Add(cliente);

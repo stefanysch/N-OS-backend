@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using N_OS.Infrastructure.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace N_OS.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260820231952_ValueObjectsEnderecoOpcionalEDocumentoUnico")]
+    partial class ValueObjectsEnderecoOpcionalEDocumentoUnico
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -304,16 +307,19 @@ namespace N_OS.Infrastructure.Migrations
                                 .HasColumnType("integer");
 
                             b1.Property<string>("Bairro")
+                                .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("Bairro");
 
                             b1.Property<string>("Cep")
+                                .IsRequired()
                                 .HasMaxLength(9)
                                 .HasColumnType("character varying(9)")
                                 .HasColumnName("Cep");
 
                             b1.Property<string>("Cidade")
+                                .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("Cidade");
@@ -324,23 +330,26 @@ namespace N_OS.Infrastructure.Migrations
                                 .HasColumnName("Complemento");
 
                             b1.Property<string>("Estado")
+                                .IsRequired()
                                 .HasMaxLength(2)
                                 .HasColumnType("character varying(2)")
                                 .HasColumnName("Estado");
 
                             b1.Property<string>("Logradouro")
+                                .IsRequired()
                                 .HasMaxLength(150)
                                 .HasColumnType("character varying(150)")
                                 .HasColumnName("Logradouro");
 
                             b1.Property<string>("Numero")
+                                .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("character varying(20)")
                                 .HasColumnName("Numero");
 
                             b1.HasKey("ClienteId");
 
-                            b1.ToTable("ClienteEnderecos", (string)null);
+                            b1.ToTable("Clientes");
 
                             b1.WithOwner()
                                 .HasForeignKey("ClienteId");

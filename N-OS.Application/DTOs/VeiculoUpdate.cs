@@ -26,10 +26,9 @@ public class VeiculoUpdateDTO
     [Range(1886, int.MaxValue, ErrorMessage = "O ano deve ser um valor válido.")]
     public int Ano { get; set; }
 
-    [Required(ErrorMessage = "A cor é obrigatória.")]
     [MinLength(3, ErrorMessage = "A cor deve ter no mínimo 3 caracteres.")]
     [MaxLength(50, ErrorMessage = "A cor deve ter no máximo 50 caracteres.")]
-    public string Cor { get; set; } = string.Empty;
+    public string? Cor { get; set; }
 
     [MinLength(3, ErrorMessage = "O chassi deve ter no mínimo 3 caracteres.")]
     [MaxLength(30, ErrorMessage = "O chassi deve ter no máximo 30 caracteres.")]

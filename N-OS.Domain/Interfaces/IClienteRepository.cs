@@ -8,6 +8,8 @@ public interface IClienteRepository
 
     Task<Cliente?> BuscarPorId(int id);
 
+    Task<Cliente?> BuscarPorDocumento(string numero);
+
     Task Criar(Cliente cliente);
 
     Task Atualizar(Cliente cliente);

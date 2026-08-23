@@ -27,30 +27,24 @@ public class ClienteUpdateDTO
     [MaxLength(150, ErrorMessage = "O email deve ter no máximo 150 caracteres.")]
     public string? Email { get; set; }
 
-    [Required]
     [MaxLength(9, ErrorMessage = "O CEP deve ter no máximo 9 caracteres.")]
-    public string Cep { get; set; } = string.Empty;
+    public string? Cep { get; set; }
 
-    [Required]
     [MaxLength(150, ErrorMessage = "O logradouro deve ter no máximo 150 caracteres.")]
-    public string Logradouro { get; set; } = string.Empty;
+    public string? Logradouro { get; set; }
 
-    [Required]
     [MaxLength(10, ErrorMessage = "O número deve ter no máximo 10 caracteres.")]
-    public string Numero { get; set; } = string.Empty;
+    public string? Numero { get; set; }
 
     [MaxLength(100, ErrorMessage = "O complemento deve ter no máximo 100 caracteres.")]
     public string? Complemento { get; set; }
 
-    [Required]
-    [MaxLength(50, ErrorMessage = "O bairro deve ter no máximo 50 caracteres."  )]
-    public string Bairro { get; set; } = string.Empty;
+    [MaxLength(50, ErrorMessage = "O bairro deve ter no máximo 50 caracteres.")]
+    public string? Bairro { get; set; }
 
-    [Required]
     [MaxLength(100, ErrorMessage = "A cidade deve ter no máximo 100 caracteres.")]
-    public string Cidade { get; set; } = string.Empty;
+    public string? Cidade { get; set; }
 
-    [Required]
     [StringLength(2, ErrorMessage = "O estado deve ter no máximo 2 caracteres.")]
-    public string Estado { get; set; } = string.Empty;
+    public string? Estado { get; set; }
 }

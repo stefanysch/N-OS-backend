@@ -230,6 +230,18 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         if (ordemDeServico == null)
             return false;
 
+        if (!ordemDeServico.Veiculo.Ativo)
+        {
+            throw new ArgumentException(
+                "Não é possível reativar a ordem de serviço porque o veículo está inativo. Reative o veículo primeiro.");
+        }
+
+        if (!ordemDeServico.Veiculo.Cliente.Ativo)
+        {
+            throw new ArgumentException(
+                "Não é possível reativar a ordem de serviço porque o cliente está inativo. Reative o cliente primeiro.");
+        }
+
         ordemDeServico.Ativo = true;
 
         await _repository.Atualizar(ordemDeServico);
@@ -254,6 +266,18 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         {
             throw new ArgumentException(
                 $"Veículo com ID {veiculoId} não encontrado.");
+        }
+
+        if (!veiculo.Ativo)
+        {
+            throw new ArgumentException(
+                "Não é possível abrir uma ordem de serviço para um veículo inativo.");
+        }
+
+        if (!veiculo.Cliente.Ativo)
+        {
+            throw new ArgumentException(
+                "Não é possível abrir uma ordem de serviço para um cliente inativo.");
         }
     }
 
