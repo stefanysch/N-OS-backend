@@ -18,6 +18,8 @@ public class OrdemDeServicoResponseDTO
 
     public DateTime DataAbertura { get; set; }
 
+    public DateTime? DataConclusao { get; set; }
+
     public bool Ativo { get; set; }
 
     public List<ItemOSResponseDTO> Itens { get; set; } = new();

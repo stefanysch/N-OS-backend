@@ -151,6 +151,16 @@ public class OrdemDeServicoService : IOrdemDeServicoService
         if (ordemDeServico == null)
             return null;
 
+        if (input.Status == StatusOS.Concluida &&
+            ordemDeServico.Status != StatusOS.Concluida)
+        {
+            ordemDeServico.DataConclusao = DateTime.UtcNow;
+        }
+        else if (input.Status != StatusOS.Concluida)
+        {
+            ordemDeServico.DataConclusao = null;
+        }
+
         ordemDeServico.Status = input.Status;
 
         await _repository.Atualizar(ordemDeServico);
@@ -401,6 +411,9 @@ public class OrdemDeServicoService : IOrdemDeServicoService
 
             DataAbertura =
                 ordemDeServico.DataAbertura,
+
+            DataConclusao =
+                ordemDeServico.DataConclusao,
 
             Ativo =
                 ordemDeServico.Ativo,

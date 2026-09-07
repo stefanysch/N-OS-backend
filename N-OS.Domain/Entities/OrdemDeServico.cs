@@ -13,6 +13,7 @@ namespace N_OS.Domain.Entities
         public decimal ValorTotal { get; set; }
         public decimal Desconto { get; set; }
         public DateTime DataAbertura { get; set; } = DateTime.UtcNow;
+        public DateTime? DataConclusao { get; set; }
         public bool Ativo { get; set; } = true;
         public ICollection<ItemOS> ItensOS { get; set; } = [];
     }
