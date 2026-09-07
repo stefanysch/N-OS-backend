@@ -33,6 +33,13 @@ public class UsuarioRepository : IUsuarioRepository
         return Task.CompletedTask;
     }
 
+    public Task Atualizar(Usuario usuario)
+    {
+        _context.Usuarios.Update(usuario);
+
+        return Task.CompletedTask;
+    }
+
     public async Task SaveChanges()
     {
         await _context.SaveChangesAsync();

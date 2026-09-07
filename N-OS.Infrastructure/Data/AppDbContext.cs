@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<OrdemDeServico> OrdensDeServico { get; set; }
     public DbSet<ItemOS> ItensOS { get; set; }
     public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<Empresa> Empresas => Set<Empresa>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

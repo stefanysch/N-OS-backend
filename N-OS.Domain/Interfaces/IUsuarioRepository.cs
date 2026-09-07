@@ -10,5 +10,7 @@ public interface IUsuarioRepository
 
     Task Criar(Usuario usuario);
 
+    Task Atualizar(Usuario usuario);
+
     Task SaveChanges();
 }
