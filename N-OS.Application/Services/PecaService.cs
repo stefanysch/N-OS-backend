@@ -29,7 +29,7 @@ public class PecaService : IPecaService
         var peca = new Peca
         {
             Nome = input.Nome,
-            Descricao = input.Descricao,
+            Descricao = input.Descricao ?? string.Empty,
             Valor = input.Valor,
             CriadoEm = DateTime.UtcNow,
             Ativo = true
@@ -51,7 +51,7 @@ public class PecaService : IPecaService
             return null;
 
         peca.Nome = input.Nome;
-        peca.Descricao = input.Descricao;
+        peca.Descricao = input.Descricao ?? string.Empty;
         peca.Valor = input.Valor;
 
         await _repository.Atualizar(peca);

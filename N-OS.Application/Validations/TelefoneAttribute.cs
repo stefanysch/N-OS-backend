@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using N_OS.Domain.Utils;
-using N_OS.Domain.ValueObjects;
 
 namespace N_OS.Application.Validations;
 
 /// <summary>
-/// Valida CPF ou CNPJ (com ou sem máscara). Valor vazio é aceito:
-/// combina com [Required] quando o campo for obrigatório.
+/// Valida telefone brasileiro (com ou sem máscara): 10 dígitos (fixo) ou
+/// 11 (celular). Valor vazio é aceito: combine com [Required] quando o campo
+/// for obrigatório.
 /// </summary>
-public class CpfCnpjAttribute : ValidationAttribute
+public class TelefoneAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
@@ -17,9 +17,9 @@ public class CpfCnpjAttribute : ValidationAttribute
 
         var digitos = Digitos.Extrair(value.ToString());
 
-        if (Documento.Valido(digitos))
+        if (digitos.Length is 10 or 11)
             return ValidationResult.Success;
 
-        return new ValidationResult("Documento inválido. Informe um CPF ou CNPJ válido.");
+        return new ValidationResult("Telefone inválido. Informe DDD e número (10 ou 11 dígitos).");
     }
 }

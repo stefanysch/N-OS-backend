@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using N_OS.Application.Validations;
 using N_OS.Domain.Enums;
 
 namespace N_OS.Application.DTOs;
 
+/// <summary>Dados para criar cliente.</summary>
 public class ClienteCreateDTO
 {
     [Required(ErrorMessage = "O nome é obrigatório.")]
@@ -13,19 +15,21 @@ public class ClienteCreateDTO
     [Required(ErrorMessage = "O tipo do documento é obrigatório.")]
     public TipoDocumento TipoDocumento { get; set; }
 
+    // aceita com ou sem máscara; o tipo (CPF/CNPJ) e a normalização
+    // para dígitos ficam por conta do value object Documento
     [Required(ErrorMessage = "O documento é obrigatório.")]
-    [MinLength(11, ErrorMessage = "O documento deve ter no mínimo 11 caracteres.")]
-    [MaxLength(14, ErrorMessage = "O documento deve ter no máximo 14 caracteres.")]
+    [CpfCnpj]
+    [MaxLength(18, ErrorMessage = "O documento deve ter no máximo 18 caracteres.")]
     public string Documento { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "O telefone é obrigatório.")]
-    [MinLength(10, ErrorMessage = "O telefone deve ter no mínimo 10 caracteres.")]
-    [MaxLength(20, ErrorMessage = "O telefone deve ter no máximo 20 caracteres.")]
+    [Telefone]
+    [MaxLength(15, ErrorMessage = "O telefone deve ter no máximo 15 caracteres.")]
     public string Telefone { get; set; } = string.Empty;
 
     [EmailAddress(ErrorMessage = "O email informado é inválido.")]
     [MaxLength(150, ErrorMessage = "O email deve ter no máximo 150 caracteres.")]
-    public string? Email { get; set; }  
+    public string? Email { get; set; }
 
     [MaxLength(9, ErrorMessage = "O CEP deve ter no máximo 9 caracteres.")]
     public string? Cep { get; set; }

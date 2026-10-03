@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace N_OS.Application.DTOs;
 
+/// <summary>Dados para criar serviço.</summary>
 public class ServicoCreateDTO
 {
     [Required(ErrorMessage = "O nome é obrigatório.")]

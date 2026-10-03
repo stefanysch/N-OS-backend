@@ -50,7 +50,8 @@ public class ClienteController : ControllerBase
 
     /// <summary>Cadastra um cliente.</summary>
     /// <remarks>
-    /// O documento (CPF/CNPJ) é validado e deve ser único.
+    /// O documento (CPF/CNPJ) é validado, aceita máscara e deve ser único.
+    /// O telefone precisa ter 10 ou 11 dígitos (com ou sem máscara).
     /// O endereço é opcional, mas se algum campo for informado,
     /// CEP, logradouro, número, bairro, cidade e UF passam a ser obrigatórios.
     /// `tipoDocumento`: 1 = CPF, 2 = CNPJ.

@@ -82,7 +82,6 @@ public class VeiculoService : IVeiculoService
         if (veiculo == null)
             return null;
 
-        veiculo.ClienteId = input.ClienteId;
         veiculo.Placa = input.Placa;
         veiculo.Marca = input.Marca;
         veiculo.Modelo = input.Modelo;

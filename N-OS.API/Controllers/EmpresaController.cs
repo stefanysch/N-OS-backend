@@ -32,8 +32,14 @@ public class EmpresaController : ControllerBase
     }
 
     /// <summary>Atualiza os dados da empresa.</summary>
+    /// <remarks>
+    /// `documento` (CPF ou CNPJ, com dígitos verificadores) e `telefone`
+    /// (10 ou 11 dígitos) são opcionais, mas validados quando informados.
+    /// Aceitam máscara, mas são gravados e devolvidos **só com dígitos**.
+    /// Campos opcionais vazios são gravados como nulos.
+    /// </remarks>
     /// <response code="200">Dados atualizados.</response>
-    /// <response code="400">Campos inválidos (o nome é obrigatório).</response>
+    /// <response code="400">Nome ausente, documento, telefone ou e-mail inválidos.</response>
     [HttpPut]
     [ProducesResponseType(typeof(EmpresaResponseDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

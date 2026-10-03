@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using N_OS.Application.Validations;
 
 namespace N_OS.Application.DTOs;
 
@@ -25,10 +26,12 @@ public class EmpresaUpdateDTO
     [MaxLength(150, ErrorMessage = "O nome deve ter no máximo 150 caracteres.")]
     public string Nome { get; set; } = string.Empty;
 
-    [MaxLength(20, ErrorMessage = "O documento deve ter no máximo 20 caracteres.")]
+    [CpfCnpj]
+    [MaxLength(18, ErrorMessage = "O documento deve ter no máximo 18 caracteres.")]
     public string? Documento { get; set; }
 
-    [MaxLength(20, ErrorMessage = "O telefone deve ter no máximo 20 caracteres.")]
+    [Telefone]
+    [MaxLength(15, ErrorMessage = "O telefone deve ter no máximo 15 caracteres.")]
     public string? Telefone { get; set; }
 
     [EmailAddress(ErrorMessage = "O e-mail informado é inválido.")]

@@ -3,6 +3,7 @@ using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
 using N_OS.Domain.Interfaces;
+using N_OS.Domain.Utils;
 using N_OS.Domain.ValueObjects;
 
 namespace N_OS.Application.Services;
@@ -55,7 +56,7 @@ public class ClienteService : IClienteService
         var cliente = new Cliente
         {
             Nome = input.Nome,
-            Telefone = input.Telefone,
+            Telefone = Digitos.Extrair(input.Telefone),
             Email = input.Email ?? string.Empty,
             CriadoEm = DateTime.UtcNow,
             Ativo = true,
@@ -101,7 +102,7 @@ public class ClienteService : IClienteService
         }
 
         cliente.Nome = input.Nome;
-        cliente.Telefone = input.Telefone;
+        cliente.Telefone = Digitos.Extrair(input.Telefone);
         cliente.Email = input.Email ?? string.Empty;
         cliente.Documento = documento;
 

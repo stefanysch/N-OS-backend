@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using N_OS.Domain.Enums;
+﻿using N_OS.Domain.Enums;
+using N_OS.Domain.Utils;
 
 namespace N_OS.Domain.ValueObjects;
 
@@ -13,7 +13,7 @@ public class Documento : ValueObject
     }
     public Documento(TipoDocumento tipo, string numero)
     {
-        numero = Regex.Replace(numero, @"\D", "").Trim();
+        numero = Digitos.Extrair(numero);
 
         Validar(tipo, numero);
 
@@ -23,78 +23,52 @@ public class Documento : ValueObject
 
     private static void Validar(TipoDocumento tipo, string numero)
     {
-        switch (tipo)
+        if (tipo is not (TipoDocumento.CPF or TipoDocumento.CNPJ))
+            throw new ArgumentException("Tipo de documento inválido.");
+
+        if (!Valido(numero, tipo))
         {
-            case TipoDocumento.CPF:
-                if (numero.Length != 11 || !ValidarCpf(numero))
-                    throw new ArgumentException("CPF inválido.");
-                break;
-
-            case TipoDocumento.CNPJ:
-                if (numero.Length != 14 || !ValidarCnpj(numero))
-                    throw new ArgumentException("CNPJ inválido.");
-                break;
-
-            default:
-                throw new ArgumentException("Tipo de documento inválido.");
+            throw new ArgumentException(
+                tipo == TipoDocumento.CPF ? "CPF inválido." : "CNPJ inválido.");
         }
     }
 
-    private static bool ValidarCpf(string cpf)
+    /// <summary>
+    /// Valida CPF (11 dígitos) ou CNPJ (14 dígitos), com dígitos verificadores.
+    /// Recebe só dígitos. Sem <paramref name="tipo"/>, o tamanho decide qual é.
+    /// Única implementação do algoritmo — usada também pelas validações de DTO.
+    /// </summary>
+    public static bool Valido(string numero, TipoDocumento? tipo = null)
     {
-        if (cpf.Distinct().Count() == 1)
+        if (!numero.All(char.IsAsciiDigit) || numero.Distinct().Count() == 1)
             return false;
 
-        int soma = 0;
+        var ciclo = numero.Length switch
+        {
+            11 when tipo is null or TipoDocumento.CPF => 12,
+            14 when tipo is null or TipoDocumento.CNPJ => 9,
+            _ => 0,
+        };
 
-        for (int i = 0; i < 9; i++)
-            soma += (cpf[i] - '0') * (10 - i);
-
-        int resto = soma % 11;
-        int digito1 = resto < 2 ? 0 : 11 - resto;
-
-        if ((cpf[9] - '0') != digito1)
+        if (ciclo == 0)
             return false;
 
-        soma = 0;
+        var baseDigitos = numero.Length - 2;
 
-        for (int i = 0; i < 10; i++)
-            soma += (cpf[i] - '0') * (11 - i);
-
-        resto = soma % 11;
-        int digito2 = resto < 2 ? 0 : 11 - resto;
-
-        return (cpf[10] - '0') == digito2;
+        return numero[baseDigitos] - '0' == DigitoVerificador(numero[..baseDigitos], ciclo)
+            && numero[baseDigitos + 1] - '0' == DigitoVerificador(numero[..(baseDigitos + 1)], ciclo);
     }
 
-    private static bool ValidarCnpj(string cnpj)
+    private static int DigitoVerificador(string digitos, int ciclo)
     {
-        if (cnpj.Distinct().Count() == 1)
-            return false;
+        var soma = 0;
 
-        int[] multiplicador1 = { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-        int[] multiplicador2 = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+        for (var i = 0; i < digitos.Length; i++)
+            soma += (digitos[digitos.Length - 1 - i] - '0') * (i % (ciclo - 1) + 2);
 
-        int soma = 0;
+        var resto = soma % 11;
 
-        for (int i = 0; i < 12; i++)
-            soma += (cnpj[i] - '0') * multiplicador1[i];
-
-        int resto = soma % 11;
-        int digito1 = resto < 2 ? 0 : 11 - resto;
-
-        if ((cnpj[12] - '0') != digito1)
-            return false;
-
-        soma = 0;
-
-        for (int i = 0; i < 13; i++)
-            soma += (cnpj[i] - '0') * multiplicador2[i];
-
-        resto = soma % 11;
-        int digito2 = resto < 2 ? 0 : 11 - resto;
-
-        return (cnpj[13] - '0') == digito2;
+        return resto < 2 ? 0 : 11 - resto;
     }
 
     public override string ToString() => Numero;

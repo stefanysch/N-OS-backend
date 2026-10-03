@@ -29,7 +29,7 @@ public class ServicoService : IServicoService
         var servico = new Servico
         {
             Nome = input.Nome,
-            Descricao = input.Descricao,
+            Descricao = input.Descricao ?? string.Empty,
             Valor = input.Valor,
             CriadoEm = DateTime.UtcNow,
             Ativo = true
@@ -51,7 +51,7 @@ public class ServicoService : IServicoService
             return null;
 
         servico.Nome = input.Nome;
-        servico.Descricao = input.Descricao;
+        servico.Descricao = input.Descricao ?? string.Empty;
         servico.Valor = input.Valor;
 
         await _repository.Atualizar(servico);

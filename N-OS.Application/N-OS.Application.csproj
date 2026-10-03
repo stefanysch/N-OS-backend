@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Validations\**" />
-    <EmbeddedResource Remove="Validations\**" />
-    <None Remove="Validations\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\N-OS.Domain\N-OS.Domain.csproj" />
   </ItemGroup>
 

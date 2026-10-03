@@ -1,15 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using N_OS.Application.Validations;
 
 namespace N_OS.Application.DTOs;
 
+/// <summary>Dados para criar veículo.</summary>
 public class VeiculoCreateDTO
 {
     [Required(ErrorMessage = "O cliente é obrigatório.")]
     public int ClienteId { get; set; }
 
+    // padrão antigo (ABC-1234) ou Mercosul (ABC1D23), com ou sem hífen
     [Required(ErrorMessage = "A placa é obrigatória.")]
-    [MinLength(7, ErrorMessage = "A placa deve ter no mínimo 7 caracteres.")]
-    [MaxLength(10, ErrorMessage = "A placa deve ter no máximo 10 caracteres.")]
+    [Placa]
     public string Placa { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "A marca é obrigatória.")]
@@ -22,9 +24,8 @@ public class VeiculoCreateDTO
     [MaxLength(100, ErrorMessage = "O modelo deve ter no máximo 100 caracteres.")]
     public string Modelo { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "O ano é obrigatório.")]
     [Range(1886, int.MaxValue, ErrorMessage = "O ano deve ser um valor válido.")]
-    public int Ano { get; set; }
+    public int? Ano { get; set; }
 
     [MinLength(3, ErrorMessage = "A cor deve ter no mínimo 3 caracteres.")]
     [MaxLength(50, ErrorMessage = "A cor deve ter no máximo 50 caracteres.")]

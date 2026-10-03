@@ -60,9 +60,12 @@ public class VeiculoController : ControllerBase
     }
 
     /// <summary>Cadastra um veículo.</summary>
-    /// <remarks>O cliente informado precisa existir e estar ativo.</remarks>
+    /// <remarks>
+    /// O cliente informado precisa existir e estar ativo.
+    /// A placa aceita o padrão antigo (ABC-1234) ou Mercosul (ABC1D23), com ou sem hífen.
+    /// </remarks>
     /// <response code="201">Veículo criado. O header `Location` aponta para o recurso.</response>
-    /// <response code="400">Campos inválidos, cliente inexistente ou inativo.</response>
+    /// <response code="400">Campos inválidos (inclusive placa), cliente inexistente ou inativo.</response>
     [HttpPost]
     [ProducesResponseType(typeof(VeiculoResponseDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

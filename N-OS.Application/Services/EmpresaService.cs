@@ -2,6 +2,7 @@ using N_OS.Application.DTOs;
 using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
 using N_OS.Domain.Interfaces;
+using N_OS.Domain.Utils;
 
 namespace N_OS.Application.Services;
 
@@ -35,26 +36,34 @@ public class EmpresaService : IEmpresaService
     {
         var empresa = await _repository.Obter();
 
+        // documento e telefone são gravados só com dígitos;
+        // a máscara fica por conta da exibição
+        var nome = input.Nome.Trim();
+        var documento = DigitosOuNulo(input.Documento);
+        var telefone = DigitosOuNulo(input.Telefone);
+        var email = VazioParaNulo(input.Email);
+        var endereco = VazioParaNulo(input.Endereco);
+
         if (empresa == null)
         {
             empresa = new Empresa
             {
-                Nome = input.Nome,
-                Documento = input.Documento,
-                Telefone = input.Telefone,
-                Email = input.Email,
-                Endereco = input.Endereco,
+                Nome = nome,
+                Documento = documento,
+                Telefone = telefone,
+                Email = email,
+                Endereco = endereco,
             };
 
             await _repository.Criar(empresa);
         }
         else
         {
-            empresa.Nome = input.Nome;
-            empresa.Documento = input.Documento;
-            empresa.Telefone = input.Telefone;
-            empresa.Email = input.Email;
-            empresa.Endereco = input.Endereco;
+            empresa.Nome = nome;
+            empresa.Documento = documento;
+            empresa.Telefone = telefone;
+            empresa.Email = email;
+            empresa.Endereco = endereco;
 
             await _repository.Atualizar(empresa);
         }
@@ -62,6 +71,20 @@ public class EmpresaService : IEmpresaService
         await _repository.SaveChanges();
 
         return MapearParaResponse(empresa);
+    }
+
+    private static string? DigitosOuNulo(string? valor)
+    {
+        var digitos = Digitos.Extrair(valor);
+
+        return digitos.Length == 0 ? null : digitos;
+    }
+
+    private static string? VazioParaNulo(string? valor)
+    {
+        var texto = valor?.Trim();
+
+        return string.IsNullOrEmpty(texto) ? null : texto;
     }
 
     private static EmpresaResponseDTO MapearParaResponse(Empresa empresa)
