@@ -1,4 +1,5 @@
 ﻿using N_OS.Application.DTOs;
+using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
 using N_OS.Domain.Interfaces;
@@ -167,7 +168,7 @@ public class ClienteService : IClienteService
         if (placasDeVeiculosComOSAtiva.Any())
         {
             var placas = string.Join(", ", placasDeVeiculosComOSAtiva);
-            throw new InvalidOperationException(
+            throw new RegraDeNegocioException(
                 $"Não é possível inativar o cliente porque o(s) veículo(s) [{placas}] " +
                 $"possui(em) ordem(ns) de serviço ativa(s).");
         }

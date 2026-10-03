@@ -4,8 +4,12 @@ using N_OS.Application.Interfaces;
 
 namespace N_OS.API.Controllers;
 
+/// <summary>Dados da empresa, exibidos no cabeçalho do PDF da ordem de serviço.</summary>
 [ApiController]
 [Route("api/empresa")]
+[Produces("application/json")]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
 public class EmpresaController : ControllerBase
 {
     private readonly IEmpresaService _empresaService;
@@ -15,7 +19,11 @@ public class EmpresaController : ControllerBase
         _empresaService = empresaService;
     }
 
+    /// <summary>Retorna os dados da empresa.</summary>
+    /// <remarks>Existe um único registro. `configurada = false` indica que ainda não foi preenchido.</remarks>
+    /// <response code="200">Dados da empresa.</response>
     [HttpGet]
+    [ProducesResponseType(typeof(EmpresaResponseDTO), StatusCodes.Status200OK)]
     public async Task<IActionResult> Obter()
     {
         var empresa = await _empresaService.Obter();
@@ -23,7 +31,12 @@ public class EmpresaController : ControllerBase
         return Ok(empresa);
     }
 
+    /// <summary>Atualiza os dados da empresa.</summary>
+    /// <response code="200">Dados atualizados.</response>
+    /// <response code="400">Campos inválidos (o nome é obrigatório).</response>
     [HttpPut]
+    [ProducesResponseType(typeof(EmpresaResponseDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Atualizar(
         [FromBody] EmpresaUpdateDTO input)
     {

@@ -1,4 +1,5 @@
 using N_OS.Application.DTOs;
+using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
 using N_OS.Domain.Interfaces;
@@ -20,7 +21,7 @@ public class PerfilService : IPerfilService
 
         if (usuario == null)
         {
-            throw new ArgumentException("Usuário não encontrado.");
+            throw new NaoEncontradoException("Usuário não encontrado.");
         }
 
         return MapearParaResponse(usuario);
@@ -34,7 +35,7 @@ public class PerfilService : IPerfilService
 
         if (usuario == null)
         {
-            throw new ArgumentException("Usuário não encontrado.");
+            throw new NaoEncontradoException("Usuário não encontrado.");
         }
 
         var emailEmUso = await _repository.BuscarPorEmail(input.Email);
@@ -60,7 +61,7 @@ public class PerfilService : IPerfilService
 
         if (usuario == null)
         {
-            throw new ArgumentException("Usuário não encontrado.");
+            throw new NaoEncontradoException("Usuário não encontrado.");
         }
 
         if (!BCrypt.Net.BCrypt.Verify(input.SenhaAtual, usuario.SenhaHash))

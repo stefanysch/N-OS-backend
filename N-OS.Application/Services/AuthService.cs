@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using N_OS.Application.DTOs;
+using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
 using N_OS.Domain.Interfaces;
@@ -57,7 +58,7 @@ public class AuthService : IAuthService
             !usuario.Ativo ||
             !BCrypt.Net.BCrypt.Verify(input.Senha, usuario.SenhaHash))
         {
-            throw new ArgumentException("E-mail ou senha inválidos.");
+            throw new CredenciaisInvalidasException("E-mail ou senha inválidos.");
         }
 
         var (token, expiraEm) = GerarToken(usuario);
