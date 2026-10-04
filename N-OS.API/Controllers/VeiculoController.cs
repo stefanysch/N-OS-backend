@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using N_OS.Application.DTOs;
 using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
+using N_OS.Application.Pagination;
 
 namespace N_OS.API.Controllers;
 
@@ -14,10 +15,28 @@ namespace N_OS.API.Controllers;
 public class VeiculoController : ControllerBase
 {
     private readonly IVeiculoService _veiculoService;
+    private readonly IVeiculoQueries _veiculoQueries;
 
-    public VeiculoController(IVeiculoService service)
+    public VeiculoController(IVeiculoService service, IVeiculoQueries queries)
     {
         _veiculoService = service;
+        _veiculoQueries = queries;
+    }
+
+    /// <summary>Lista veículos paginados.</summary>
+    /// <remarks>
+    /// Ativos primeiro e inativos por último. `q` busca por placa, marca, modelo ou nome do cliente.
+    /// `sort`: `placa` (padrão), `marca`, `modelo`, `ano`, `cliente` ou `criadoEm`.
+    /// `dir`: `asc` ou `desc`. `pageSize` máximo de 100.
+    /// </remarks>
+    /// <response code="200">Página de veículos (pode ter zero itens).</response>
+    [HttpGet("paginado")]
+    [ProducesResponseType(typeof(PagedResult<VeiculoListagemDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaginado([FromQuery] PageQuery query)
+    {
+        var pagina = await _veiculoQueries.Listar(query);
+
+        return Ok(pagina);
     }
 
     /// <summary>Lista todos os veículos.</summary>

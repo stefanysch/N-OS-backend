@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using N_OS.Application.DTOs;
 using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
+using N_OS.Application.Pagination;
 using N_OS.Domain.Entities;
 
 namespace N_OS.API.Controllers;
@@ -15,10 +16,27 @@ namespace N_OS.API.Controllers;
 public class ServicoController : ControllerBase
 {
     private readonly IServicoService _servicoService;
+    private readonly IServicoQueries _servicoQueries;
 
-    public ServicoController(IServicoService servicoService)
+    public ServicoController(IServicoService servicoService, IServicoQueries queries)
     {
         _servicoService = servicoService;
+        _servicoQueries = queries;
+    }
+
+    /// <summary>Lista serviços paginados.</summary>
+    /// <remarks>
+    /// Ativos primeiro e inativos por último. `q` busca por nome ou descrição.
+    /// `sort`: `nome` (padrão), `valor` ou `criadoEm`. `dir`: `asc` ou `desc`. `pageSize` máximo de 100.
+    /// </remarks>
+    /// <response code="200">Página de serviços (pode ter zero itens).</response>
+    [HttpGet("paginado")]
+    [ProducesResponseType(typeof(PagedResult<ServicoListagemDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaginado([FromQuery] PageQuery query)
+    {
+        var pagina = await _servicoQueries.Listar(query);
+
+        return Ok(pagina);
     }
 
     /// <summary>Lista todos os serviços.</summary>

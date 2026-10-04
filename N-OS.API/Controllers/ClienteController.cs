@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using N_OS.Application.DTOs;
 using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
+using N_OS.Application.Pagination;
 
 namespace N_OS.API.Controllers;
 
@@ -14,10 +15,28 @@ namespace N_OS.API.Controllers;
 public class ClienteController : ControllerBase
 {
     private readonly IClienteService _clienteService;
+    private readonly IClienteQueries _clienteQueries;
 
-    public ClienteController(IClienteService service)
+    public ClienteController(IClienteService service, IClienteQueries queries)
     {
         _clienteService = service;
+        _clienteQueries = queries;
+    }
+
+    /// <summary>Lista clientes paginados, com a quantidade de veículos.</summary>
+    /// <remarks>
+    /// Ativos primeiro e inativos por último. `q` busca por nome, documento, telefone ou e-mail.
+    /// `sort`: `nome` (padrão) ou `criadoEm`. `dir`: `asc` ou `desc`. `pageSize` máximo de 100.
+    /// Os veículos de um cliente vêm de `GET /api/veiculos/cliente/{clienteId}`.
+    /// </remarks>
+    /// <response code="200">Página de clientes (pode ter zero itens).</response>
+    [HttpGet("paginado")]
+    [ProducesResponseType(typeof(PagedResult<ClienteListagemDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaginado([FromQuery] PageQuery query)
+    {
+        var pagina = await _clienteQueries.Listar(query);
+
+        return Ok(pagina);
     }
 
     /// <summary>Lista todos os clientes.</summary>

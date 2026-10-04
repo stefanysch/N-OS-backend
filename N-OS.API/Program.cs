@@ -13,6 +13,7 @@ using N_OS.Application.Interfaces;
 using N_OS.Application.Services;
 using N_OS.Domain.Interfaces;
 using N_OS.Infrastructure.Data;
+using N_OS.Infrastructure.Queries;
 using N_OS.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,12 @@ builder.Services.AddScoped<IOrdemDeServicoRepository, OrdemDeServicoRepository>(
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+
+builder.Services.AddScoped<IClienteQueries, ClienteQueries>();
+builder.Services.AddScoped<IVeiculoQueries, VeiculoQueries>();
+builder.Services.AddScoped<IPecaQueries, PecaQueries>();
+builder.Services.AddScoped<IServicoQueries, ServicoQueries>();
+builder.Services.AddScoped<IOrdemDeServicoQueries, OrdemDeServicoQueries>();
 
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IVeiculoService, VeiculoService>();

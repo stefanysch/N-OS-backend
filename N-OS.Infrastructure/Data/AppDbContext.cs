@@ -79,6 +79,13 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
+        modelBuilder.Entity<OrdemDeServico>(ordem =>
+        {
+            ordem.HasIndex(os => os.VeiculoId);
+            ordem.HasIndex(os => os.Status);
+            ordem.HasIndex(os => os.DataAbertura);
+        });
+
         modelBuilder.Entity<Usuario>(usuario =>
         {
             usuario.HasIndex(u => u.Email)

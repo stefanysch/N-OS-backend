@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using N_OS.Application.DTOs;
 using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
+using N_OS.Application.Pagination;
 
 namespace N_OS.API.Controllers;
 
@@ -16,11 +17,30 @@ public class OrdemDeServicoController : ControllerBase
     private const string NaoEncontrada = "Ordem de serviço não encontrada";
 
     private readonly IOrdemDeServicoService _ordemDeServicoService;
+    private readonly IOrdemDeServicoQueries _ordemDeServicoQueries;
 
     public OrdemDeServicoController(
-        IOrdemDeServicoService ordemDeServicoService)
+        IOrdemDeServicoService ordemDeServicoService,
+        IOrdemDeServicoQueries ordemDeServicoQueries)
     {
         _ordemDeServicoService = ordemDeServicoService;
+        _ordemDeServicoQueries = ordemDeServicoQueries;
+    }
+
+    /// <summary>Lista ordens de serviço paginadas, sem itens.</summary>
+    /// <remarks>
+    /// Ativas primeiro e inativas por último. `q` busca por nome do cliente ou placa.
+    /// `sort`: `cliente`, `placa`, `status`, `valorTotal` ou `dataAbertura` (padrão, decrescente).
+    /// `dir`: `asc` ou `desc`. `pageSize` máximo de 100.
+    /// </remarks>
+    /// <response code="200">Página de ordens (pode ter zero itens).</response>
+    [HttpGet("paginado")]
+    [ProducesResponseType(typeof(PagedResult<OrdemDeServicoListagemDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaginado([FromQuery] PageQuery query)
+    {
+        var pagina = await _ordemDeServicoQueries.Listar(query);
+
+        return Ok(pagina);
     }
 
     /// <summary>Lista todas as ordens de serviço.</summary>

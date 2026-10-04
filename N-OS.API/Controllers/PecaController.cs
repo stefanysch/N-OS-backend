@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using N_OS.Application.DTOs;
 using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
+using N_OS.Application.Pagination;
 using N_OS.Domain.Entities;
 
 namespace N_OS.API.Controllers;
@@ -15,10 +16,27 @@ namespace N_OS.API.Controllers;
 public class PecaController : ControllerBase
 {
     private readonly IPecaService _pecaService;
+    private readonly IPecaQueries _pecaQueries;
 
-    public PecaController(IPecaService service)
+    public PecaController(IPecaService service, IPecaQueries queries)
     {
         _pecaService = service;
+        _pecaQueries = queries;
+    }
+
+    /// <summary>Lista peças paginadas.</summary>
+    /// <remarks>
+    /// Ativas primeiro e inativas por último. `q` busca por nome ou descrição.
+    /// `sort`: `nome` (padrão), `valor` ou `criadoEm`. `dir`: `asc` ou `desc`. `pageSize` máximo de 100.
+    /// </remarks>
+    /// <response code="200">Página de peças (pode ter zero itens).</response>
+    [HttpGet("paginado")]
+    [ProducesResponseType(typeof(PagedResult<PecaListagemDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaginado([FromQuery] PageQuery query)
+    {
+        var pagina = await _pecaQueries.Listar(query);
+
+        return Ok(pagina);
     }
 
     /// <summary>Lista todas as peças.</summary>
