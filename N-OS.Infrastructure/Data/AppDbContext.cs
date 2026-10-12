@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<ItemOS> ItensOS { get; set; }
     public DbSet<Usuario> Usuarios => Set<Usuario>();
     public DbSet<Empresa> Empresas => Set<Empresa>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,6 +91,31 @@ public class AppDbContext : DbContext
         {
             usuario.HasIndex(u => u.Email)
                 .IsUnique();
+        });
+
+        modelBuilder.Entity<RefreshToken>(token =>
+        {
+            token.Property(t => t.TokenHash)
+                .HasMaxLength(64)
+                .IsRequired();
+
+            token.Property(t => t.IpCriacao)
+                .HasMaxLength(45);
+
+            token.Property(t => t.UserAgent)
+                .HasMaxLength(300);
+
+            token.HasIndex(t => t.TokenHash)
+                .IsUnique();
+
+            token.HasIndex(t => t.FamiliaId);
+
+            token.HasIndex(t => t.UsuarioId);
+
+            token.HasOne(t => t.Usuario)
+                .WithMany()
+                .HasForeignKey(t => t.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

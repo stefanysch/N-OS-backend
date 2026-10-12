@@ -8,6 +8,8 @@ public interface IUsuarioRepository
 
     Task<Usuario?> BuscarPorEmail(string email);
 
+    Task<bool> ExisteAlgum();
+
     Task Criar(Usuario usuario);
 
     Task Atualizar(Usuario usuario);

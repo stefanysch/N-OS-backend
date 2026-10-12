@@ -9,81 +9,110 @@ namespace N_OS.Application.Services;
 public class PerfilService : IPerfilService
 {
     private readonly IUsuarioRepository _repository;
+    private readonly IRefreshTokenRepository _refreshTokens;
 
-    public PerfilService(IUsuarioRepository repository)
+    public PerfilService(
+        IUsuarioRepository repository,
+        IRefreshTokenRepository refreshTokens)
     {
         _repository = repository;
+        _refreshTokens = refreshTokens;
     }
 
     public async Task<UsuarioResponseDTO> Obter(int usuarioId)
     {
-        var usuario = await _repository.BuscarPorId(usuarioId);
+        var usuario = await BuscarOuFalhar(usuarioId);
 
-        if (usuario == null)
-        {
-            throw new NaoEncontradoException("Usuário não encontrado.");
-        }
-
-        return MapearParaResponse(usuario);
+        return UsuarioResponseDTO.De(usuario);
     }
 
     public async Task<UsuarioResponseDTO> Atualizar(
         int usuarioId,
         AtualizarPerfilDTO input)
     {
-        var usuario = await _repository.BuscarPorId(usuarioId);
+        var usuario = await BuscarOuFalhar(usuarioId);
 
-        if (usuario == null)
+        var email = AuthService.NormalizarEmail(input.Email);
+
+        if (email != usuario.Email)
         {
-            throw new NaoEncontradoException("Usuário não encontrado.");
+            // o e-mail é o identificador de login: trocá-lo exige provar que
+            // quem está na sessão sabe a senha
+            await ConfirmarSenhaAtual(usuario, input.SenhaAtual);
+
+            var emailEmUso = await _repository.BuscarPorEmail(email);
+
+            if (emailEmUso != null && emailEmUso.Id != usuarioId)
+            {
+                throw new ArgumentException(
+                    "Já existe um usuário cadastrado com este e-mail.");
+            }
+
+            usuario.Email = email;
         }
 
-        var emailEmUso = await _repository.BuscarPorEmail(input.Email);
-
-        if (emailEmUso != null && emailEmUso.Id != usuarioId)
-        {
-            throw new ArgumentException(
-                "Já existe um usuário cadastrado com este e-mail.");
-        }
-
-        usuario.Nome = input.Nome;
-        usuario.Email = input.Email;
+        usuario.Nome = input.Nome.Trim();
 
         await _repository.Atualizar(usuario);
         await _repository.SaveChanges();
 
-        return MapearParaResponse(usuario);
+        return UsuarioResponseDTO.De(usuario);
     }
 
     public async Task AlterarSenha(int usuarioId, AlterarSenhaDTO input)
     {
-        var usuario = await _repository.BuscarPorId(usuarioId);
+        var usuario = await BuscarOuFalhar(usuarioId);
 
-        if (usuario == null)
+        await ConfirmarSenhaAtual(usuario, input.SenhaAtual);
+
+        if (input.NovaSenha == input.SenhaAtual)
         {
-            throw new NaoEncontradoException("Usuário não encontrado.");
+            throw new ArgumentException(
+                "A nova senha deve ser diferente da senha atual.");
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(input.SenhaAtual, usuario.SenhaHash))
-        {
-            throw new ArgumentException("Senha atual incorreta.");
-        }
+        usuario.SenhaHash = SegurancaSenha.Gerar(input.NovaSenha);
 
-        usuario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(input.NovaSenha);
+        // invalida todos os tokens emitidos antes da troca (inclusive o atual)
+        usuario.VersaoToken++;
 
         await _repository.Atualizar(usuario);
         await _repository.SaveChanges();
+
+        // encerra também as renovações: nenhuma sessão antiga consegue voltar
+        await _refreshTokens.RevogarTodosDoUsuario(usuario.Id, DateTime.UtcNow);
     }
 
-    private static UsuarioResponseDTO MapearParaResponse(Usuario usuario)
+    private async Task<Usuario> BuscarOuFalhar(int usuarioId)
     {
-        return new UsuarioResponseDTO
+        return await _repository.BuscarPorId(usuarioId)
+            ?? throw new NaoEncontradoException("Usuário não encontrado.");
+    }
+
+    // a senha atual errada conta para o mesmo bloqueio do login: sem isso,
+    // quem tem uma sessão aberta poderia adivinhar a senha sem limite
+    private async Task ConfirmarSenhaAtual(Usuario usuario, string? senhaAtual)
+    {
+        var agora = DateTime.UtcNow;
+
+        if (usuario.EstaBloqueado(agora))
         {
-            Id = usuario.Id,
-            Nome = usuario.Nome,
-            Email = usuario.Email,
-            CriadoEm = usuario.CriadoEm,
-            Ativo = usuario.Ativo,
-        };
+            throw new ArgumentException(
+                "Muitas tentativas incorretas. Tente novamente mais tarde.");
+        }
+
+        if (!string.IsNullOrEmpty(senhaAtual) &&
+            SegurancaSenha.Verificar(senhaAtual, usuario.SenhaHash))
+        {
+            usuario.ZerarTentativasDeLogin();
+            return;
+        }
+
+        usuario.RegistrarSenhaIncorreta(agora);
+
+        await _repository.Atualizar(usuario);
+        await _repository.SaveChanges();
+
+        throw new ArgumentException("Senha atual incorreta.");
     }
 }

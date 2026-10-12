@@ -22,8 +22,15 @@ public class UsuarioRepository : IUsuarioRepository
 
     public async Task<Usuario?> BuscarPorEmail(string email)
     {
+        var normalizado = email.Trim().ToLowerInvariant();
+
         return await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Email == normalizado);
+    }
+
+    public async Task<bool> ExisteAlgum()
+    {
+        return await _context.Usuarios.AnyAsync();
     }
 
     public Task Criar(Usuario usuario)

@@ -1,11 +1,11 @@
 namespace N_OS.Application.DTOs;
 
+/// <summary>
+/// Dados do usuário logado. Os tokens NÃO vão no corpo: seguem em cookies
+/// HttpOnly, fora do alcance de JavaScript.
+/// </summary>
 public class LoginResponseDTO
 {
-    public string Token { get; set; } = string.Empty;
-
-    public DateTime ExpiraEm { get; set; }
-
     public int UsuarioId { get; set; }
 
     public string Nome { get; set; } = string.Empty;
