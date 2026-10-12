@@ -197,6 +197,60 @@ namespace N_OS.Infrastructure.Migrations
                     b.ToTable("Pecas");
                 });
 
+            modelBuilder.Entity("N_OS.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiraEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("FamiliaCriadaEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FamiliaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IpCriacao")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<DateTime?>("RevogadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("UsadoEm")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FamiliaId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("N_OS.Domain.Entities.Servico", b =>
                 {
                     b.Property<int>("Id")
@@ -238,6 +292,9 @@ namespace N_OS.Infrastructure.Migrations
                     b.Property<bool>("Ativo")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("BloqueadoAte")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("timestamp with time zone");
 
@@ -252,6 +309,12 @@ namespace N_OS.Infrastructure.Migrations
                     b.Property<string>("SenhaHash")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("TentativasFalhasLogin")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VersaoToken")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -420,6 +483,17 @@ namespace N_OS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Veiculo");
+                });
+
+            modelBuilder.Entity("N_OS.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("N_OS.Domain.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("N_OS.Domain.Entities.Veiculo", b =>
