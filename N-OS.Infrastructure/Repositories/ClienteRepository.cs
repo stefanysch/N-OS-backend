@@ -59,10 +59,8 @@ public class ClienteRepository : IClienteRepository
     public async Task<IEnumerable<string>> PlacasDeVeiculosComOSAtiva(int clienteId)
     {
         return await _context.OrdensDeServico
-        .Where(os => 
-            os.Veiculo.ClienteId == clienteId &&
-            os.Status != StatusOS.Concluida &&
-            os.Ativo)
+        .Where(OrdemDeServico.EmAberto)
+        .Where(os => os.Veiculo.ClienteId == clienteId)
         .Select(os => os.Veiculo.Placa)
         .Distinct()
         .ToListAsync();

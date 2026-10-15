@@ -16,5 +16,7 @@ namespace N_OS.Domain.Entities
         public DateTime? DataConclusao { get; set; }
         public bool Ativo { get; set; } = true;
         public ICollection<ItemOS> ItensOS { get; set; } = [];
+        public static readonly System.Linq.Expressions.Expression<Func<OrdemDeServico, bool>> EmAberto =
+            os => os.Ativo && os.Status != StatusOS.Concluida;
     }
 }

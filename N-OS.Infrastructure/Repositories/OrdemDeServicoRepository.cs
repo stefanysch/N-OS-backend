@@ -55,9 +55,8 @@ public class OrdemDeServicoRepository : IOrdemDeServicoRepository
     public async Task<bool> PossuiOrdemDeServicoAtiva(int veiculoId)
     {
         return await _context.OrdensDeServico
-            .AnyAsync(os =>
-                os.VeiculoId == veiculoId &&
-                os.Ativo);
+            .Where(OrdemDeServico.EmAberto)
+            .AnyAsync(os => os.VeiculoId == veiculoId);
     }
 
     public async Task SaveChanges()
