@@ -1,4 +1,5 @@
 ﻿using N_OS.Application.DTOs;
+using N_OS.Application.Exceptions;
 using N_OS.Application.Interfaces;
 using N_OS.Domain.Entities;
 using N_OS.Domain.Interfaces;
@@ -54,6 +55,8 @@ public class VeiculoService : IVeiculoService
                 $"Cliente com ID {input.ClienteId} está inativo.");
         }
 
+        await GarantirPlacaDisponivelParaCliente(input.ClienteId, input.Placa, null);
+
         var veiculo = new Veiculo
         {
             ClienteId = input.ClienteId,
@@ -82,6 +85,8 @@ public class VeiculoService : IVeiculoService
         if (veiculo == null)
             return null;
 
+        await GarantirPlacaDisponivelParaCliente(veiculo.ClienteId, input.Placa, veiculo.Id);
+
         veiculo.Placa = input.Placa;
         veiculo.Marca = input.Marca;
         veiculo.Modelo = input.Modelo;
@@ -107,7 +112,7 @@ public class VeiculoService : IVeiculoService
 
         if (possuiOrdemDeServicoAtiva)
         {
-            throw new ArgumentException(
+            throw new RegraDeNegocioException(
                 "Não é possível inativar o veículo porque ele possui uma ordem de serviço ativa.");
         }
 
@@ -138,6 +143,31 @@ public class VeiculoService : IVeiculoService
         await _repository.SaveChanges();
 
         return true;
+    }
+
+    private async Task GarantirPlacaDisponivelParaCliente(
+        int clienteId,
+        string placa,
+        int? ignorarVeiculoId)
+    {
+        var placaNormalizada = NormalizarPlaca(placa);
+
+        var veiculosDoCliente = await _repository.ListarPorCliente(clienteId);
+
+        var duplicada = veiculosDoCliente.Any(v =>
+            v.Id != ignorarVeiculoId &&
+            NormalizarPlaca(v.Placa) == placaNormalizada);
+
+        if (duplicada)
+        {
+            throw new RegraDeNegocioException(
+                "Este cliente já possui um veículo cadastrado com esta placa.");
+        }
+    }
+
+    private static string NormalizarPlaca(string placa)
+    {
+        return placa.Replace("-", "").Trim().ToUpperInvariant();
     }
 
     private static VeiculoResponseDTO MapearParaResponse(Veiculo veiculo)
